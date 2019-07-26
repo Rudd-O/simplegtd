@@ -56,4 +56,5 @@ setup(
 	scripts=["bin/%s" % p for p in programs],
 	keywords="gtd getting things done",
 	zip_safe=False,
+	install_requires=['xdg'],
 )
