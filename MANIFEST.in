@@ -1,0 +1,6 @@
+include README.md
+include doc/*
+include applications/*.desktop
+include test/*py
+include test/testdata/*
+include test/dogtail/*.py

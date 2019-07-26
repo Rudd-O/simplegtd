@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Simple GTD
+Exec=simplegtd
+Icon=application-x-executable
+Terminal=false
+TryExec=simplegtd
+Type=Application
+Categories=Office;Productivity;
