@@ -8,7 +8,7 @@ import os
 import gi
 gi.require_version('Gdk', '3.0')
 gi.require_version('Gtk', '3.0')
-from gi.repository import GObject, GLib, Gdk, Gtk
+from gi.repository import GObject, GLib, Gdk, Gtk, Gio
 
 import xdg.BaseDirectory
 
@@ -89,8 +89,107 @@ class SmartApplicationWindow(Gtk.ApplicationWindow):
 
 
 class SimpleGTDMainWindow(SmartApplicationWindow):
-    def __init__(self, state_file):
-        SmartApplicationWindow.__init__(self, state_file)
+    def __init__(self, todotxt, window_state_file):
+        SmartApplicationWindow.__init__(self, window_state_file)
+        self.set_title('Simple GTD')
+        header_bar = Gtk.HeaderBar()
+        header_bar.set_property('expand', False)
+        header_bar.set_title('Tasks')
+        header_bar.set_show_close_button(True)
+        self.set_titlebar(header_bar)
+        view = Gtk.TreeView(todotxt)
+        renderer = Gtk.CellRendererText()
+        renderer.set_property('editable', True)
+        renderer.connect("edited", lambda _, path, new_text: todotxt.task_edited(path, new_text))
+        column = Gtk.TreeViewColumn("Task", renderer, text=0)
+        view.append_column(column)
+        self.add(view)
+
+
+class TodoTxt(Gtk.ListStore):
+
+    todofile = None
+    last_line_cr = False
+    entries = 0
+
+    def __init__(self):
+        Gtk.ListStore.__init__(self, str)
+
+    def disestablish_handler(self):
+        self.monitor_dir.disconnect(self.monitor_handle)
+
+    def establish_handler(self):
+        self.monitor_handle = self.monitor_dir.connect("changed", self.dir_changed)
+
+    @classmethod
+    def from_file(klass, filename):
+        self = klass()
+        self.todofile = filename
+        self.giofile_dir = Gio.File.new_for_path(os.path.dirname(self.todofile))
+        self.monitor_dir = self.giofile_dir.monitor(Gio.FileMonitorFlags.WATCH_MOVES, None)
+        self.establish_handler()
+        self.load()
+        return self
+
+    def dir_changed(self, monitor, f, newf, event):
+        if event == Gio.FileMonitorEvent.CHANGES_DONE_HINT:
+            self.load()
+        elif event == Gio.FileMonitorEvent.RENAMED:
+            if newf.get_basename() == os.path.basename(self.todofile):
+                self.load()
+
+    def task_edited(self, path, new_text):
+        if self[path][0] == new_text:
+            return
+        self.set_value(self[path].iter, 0, new_text)
+        self.save()
+
+    def load(self):
+        if not self.todofile:
+            return
+        entries = 0
+        try:
+            with open(self.todofile, "r") as f:
+                lines = f.readlines()
+                self.last_line_cr = lines and lines[-1] and lines[-1][-1] == "\n"
+                for n, line in enumerate(lines):
+                    if line and line[-1] == "\n":
+                        line = line[:-1]
+                    entries += 1
+                    try:
+                        if self[n][0] != line:
+                            self.set_value(self[n].iter, 0, line)
+                    except IndexError:
+                        self.append([line])
+        except FileNotFoundError:
+            pass
+        while self.entries > entries:
+            self.remove(self[-1].iter)
+            self.entries -= 1
+        self.entries = entries
+        return self
+
+    def save(self):
+        '''Saves the todo tasks list.'''
+        if not self.todofile:
+            return
+        lines = [row[0] + "\n" for row in self]
+        if not self.last_line_cr:
+            if lines:
+                lines[-1] = lines[-1][:-1]
+        text = "".join(lines)
+        try:
+            with open(self.todofile, "r") as f:
+                if text == f.read():
+                    return
+        except FileNotFoundError:
+            pass
+
+        self.disestablish_handler()
+        with open(self.todofile, "w") as f:
+            f.write(text)
+            f.flush()
+        GObject.idle_add(self.establish_handler)
 
 
 class SimpleGTD(Gtk.Application):
@@ -98,16 +197,23 @@ class SimpleGTD(Gtk.Application):
     def __init__(self):
         Gtk.Application.__init__(self)
         self.config_dir = os.path.join(xdg.BaseDirectory.xdg_config_home, "simplegtd")
-        if not os.path.isdir(self.config_dir):
-            os.makedirs(self.config_dir)
+        self.data_dir = os.path.join(xdg.BaseDirectory.xdg_data_home, "simplegtd")
+        for d in self.config_dir, self.data_dir:
+            if not os.path.isdir(d):
+                os.makedirs(d)
         self.connect("activate", self.on_activate)
         self.connect("window-removed", self.main_window_removed)
 
     def on_activate(self, unused_ref):
-        window = SimpleGTDMainWindow(os.path.join(self.config_dir, "window-state"))
-        self.add_window(window)
-        window.connect("destroy", lambda *a: self.remove_window(window))
-        window.show()
+        try:
+            self.model = TodoTxt.from_file(os.path.join(self.data_dir, "todo.txt"))
+            window = SimpleGTDMainWindow(self.model, os.path.join(self.config_dir, "window-state"))
+            self.add_window(window)
+            window.connect("destroy", lambda *a: self.remove_window(window))
+            window.show_all()
+        except BaseException:
+            Gtk.main_quit()
+            raise
 
     def main_window_removed(self, unused_ref, window):
         self.quit()
