@@ -105,7 +105,7 @@ class TodoTxt(Gtk.ListStore):
                     for r in range(i2 - i1):
                         self.logger.debug("Replacing row %s with new row %s", i1 + 1, j1 + r)
                         self.set_value(self[i1 + r].iter, 0, new_lines[j1 + r])
-                        self.set_value(self[i1 + r].iter, 1, new_lines[j1 + r], markup_for(new_lines[j1 + r]))
+                        self.set_value(self[i1 + r].iter, 1, markup_for(new_lines[j1 + r]))
                 elif i2 - i1 > j2 - j1:
                     # The number of rows replaced is larger in old than in new.
                     for r in reversed(range((i2 - i1) - (j2 - j1))):
@@ -114,7 +114,7 @@ class TodoTxt(Gtk.ListStore):
                     for r in range(j2 - j1):
                         self.logger.debug("Replacing row %s with new row %s", i1 + 1, j1 + r)
                         self.set_value(self[i1 + r].iter, 0, new_lines[j1 + r])
-                        self.set_value(self[i1 + r].iter, 1, new_lines[j1 + r], markup_for(new_lines[j1 + r]))
+                        self.set_value(self[i1 + r].iter, 1, markup_for(new_lines[j1 + r]))
                 else: # i2 - i1 < j2 - j1:
                     # The number of rows replaced is larger in new than in old.
                     for r in range((j2 - j1) - (i2 - i1)):
@@ -123,7 +123,7 @@ class TodoTxt(Gtk.ListStore):
                     for r in range(j2 - j1):
                         self.logger.debug("Replacing row %s with new row %s", i1 + 1, j1 + r)
                         self.set_value(self[i1 + r].iter, 0, new_lines[j1 + r])
-                        self.set_value(self[i1 + r].iter, 1, new_lines[j1 + r], markup_for(new_lines[j1 + r]))
+                        self.set_value(self[i1 + r].iter, 1, markup_for(new_lines[j1 + r]))
             else:
                 assert 0, "not reached: %s" % op
         return

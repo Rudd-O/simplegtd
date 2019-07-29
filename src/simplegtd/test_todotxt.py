@@ -42,3 +42,10 @@ class TodoTxtTest(unittest.TestCase):
         assert t[1][0] == "y"
         assert t[2][0] == "c"
         assert len(t) == 3
+
+    def test_markup(self):
+        t = TodoTxt()
+        t._load_from_lines(['2018-09-09 a\n'])
+        assert t[0][0] == "2018-09-09 a", t[0][0]
+        assert t[0][1] == "<span foreground='green'>2018-09-09</span> a", t[0][1]
+        assert t.last_line_cr is True
