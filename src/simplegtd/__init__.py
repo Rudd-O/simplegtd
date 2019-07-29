@@ -3,6 +3,7 @@
 __version__ = "0.0.1"
 
 
+import collections
 import os
 
 import gi
@@ -12,28 +13,54 @@ from gi.repository import GObject, GLib, Gdk, Gtk, Gio
 
 import xdg.BaseDirectory
 
+import simplegtd.filterlist
 import simplegtd.rememberingwindow
 import simplegtd.todotxt
+import simplegtd.views
 
 
 class SimpleGTDMainWindow(Gtk.ApplicationWindow, simplegtd.rememberingwindow.RememberingWindow):
+
     def __init__(self, todotxt, window_state_file):
         Gtk.ApplicationWindow.__init__(self)
         simplegtd.rememberingwindow.RememberingWindow.__init__(self, window_state_file)
         self.set_title('Simple GTD')
+
         header_bar = Gtk.HeaderBar()
         header_bar.set_property('expand', False)
         header_bar.set_title('Tasks')
         header_bar.set_show_close_button(True)
         self.set_titlebar(header_bar)
-        view = Gtk.TreeView()
-        view.set_model(todotxt)
-        renderer = Gtk.CellRendererText()
-        renderer.set_property('editable', True)
-        renderer.connect("edited", lambda _, path, new_text: todotxt.edit(path, new_text))
-        column = Gtk.TreeViewColumn("Task", renderer, text=0)
-        view.append_column(column)
-        self.add(view)
+
+        self.task_view = simplegtd.views.TaskView()
+        task_view_scroller = Gtk.ScrolledWindow()
+        task_view_scroller.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+        task_view_scroller.add(self.task_view)
+
+        self.filter_view = simplegtd.views.FilterView()
+        self.filter_view.get_selection().connect("changed", self.filter_selection_changed)
+        filter_view_scroller = Gtk.ScrolledWindow()
+        filter_view_scroller.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        filter_view_scroller.add(self.filter_view)
+
+        filters = simplegtd.filterlist.FilterList(todotxt)
+        self.task_view.set_model(todotxt)
+        self.filter_view.set_model(filters)
+
+        GLib.idle_add(self.task_view.focus_first)
+        GLib.idle_add(self.filter_view.select_first)
+
+        paned = Gtk.Paned()
+        paned.set_wide_handle(True)
+        paned.pack1(filter_view_scroller, False, False)
+        paned.add2(task_view_scroller)
+
+        self.add(paned)
+        self.task_view.grab_focus()
+
+    def filter_selection_changed(self, tree_selection):
+        filter_strings = self.filter_view.get_filters_from_selection(tree_selection)
+        self.task_view.set_filters(filter_strings)
 
 
 class SimpleGTD(Gtk.Application):
@@ -74,4 +101,5 @@ def main():
 
 
 if __name__ == "__main__":
+    # FIXME remove debug code.
     main()
