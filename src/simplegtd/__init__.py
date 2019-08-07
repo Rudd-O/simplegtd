@@ -12,10 +12,9 @@ gi.require_version('Gdk', '3.0')
 gi.require_version('Gtk', '3.0')
 from gi.repository import GObject, GLib, Gdk, Gtk, Gio
 
-import xdg.BaseDirectory
-
 import simplegtd.todotxt
 import simplegtd.mainwindow
+import simplegtd.resource
 
 
 def hash_path(filename):
@@ -55,8 +54,8 @@ class SimpleGTD(Gtk.Application, _SimpleGTDAppState):
 
     def __init__(self):
         Gtk.Application.__init__(self)
-        self.config_dir = os.path.join(xdg.BaseDirectory.xdg_config_home, "simplegtd")
-        self.data_dir = os.path.join(xdg.BaseDirectory.xdg_data_home, "simplegtd")
+        self.config_dir = simplegtd.resource.config_dir()
+        self.data_dir = simplegtd.resource.data_home()
         for d in self.config_dir, self.data_dir:
             if not os.path.isdir(d):
                 os.makedirs(d)

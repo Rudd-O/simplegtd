@@ -11,12 +11,6 @@ import simplegtd.resource
 import simplegtd.views
 
 
-def shorten_path(filename):
-    if filename.startswith(os.path.expanduser("~/")):
-        filename = "~/" + filename[len(os.path.expanduser("~/")):]
-    return filename
-
-
 class SimpleGTDMainWindow(Gtk.ApplicationWindow, simplegtd.rememberingwindow.RememberingWindow):
 
     __gsignals__ = {
@@ -45,12 +39,21 @@ class SimpleGTDMainWindow(Gtk.ApplicationWindow, simplegtd.rememberingwindow.Rem
         header_bar = Gtk.HeaderBar()
         header_bar.set_property('expand', False)
         if todotxt.name():
-            header_bar.set_title('Simple GTD (%s)' % os.path.basename(todotxt.name()))
-            self.set_title('Simple GTD (%s)' % os.path.basename(todotxt.name()))
+            n = todotxt.name()
+            bn = os.path.basename(n)
+            dn = simplegtd.resource.strip_data_home(os.path.dirname(n))
+            if dn:
+                dn = simplegtd.resource.shorten_path(dn)
+                title = "%s (%s)" % (bn, dn)
+            else:
+                title = "%s" % bn
+            header_bar.set_title(title)
+            self.set_title(title)
         else:
-            header_bar.set_title('Simple GTD')
-            self.set_title('Simple GTD')
-        header_bar.set_subtitle(shorten_path(todotxt.name() or "(no file)"))
+            header_bar.set_title('Simple GTD (in memory)')
+            self.set_title('Simple GTD (in memory)')
+        # FIXME: use subtitle to list total and outstanding tasks, filtered and non-filtered
+        header_bar.set_subtitle(simplegtd.resource.shorten_path(todotxt.name() or "(no file)"))
         header_bar.set_show_close_button(True)
         self.set_titlebar(header_bar)
 
