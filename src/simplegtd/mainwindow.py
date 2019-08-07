@@ -19,9 +19,11 @@ def shorten_path(filename):
 class SimpleGTDMainWindow(Gtk.ApplicationWindow, simplegtd.rememberingwindow.RememberingWindow):
 
     __gsignals__ = {
-        'open-file-activated': (GObject.SIGNAL_RUN_LAST, None, ())
+        'open-file-activated': (GObject.SIGNAL_RUN_LAST, None, ()),
+        'new-window-activated': (GObject.SIGNAL_RUN_LAST, None, ()),
+        'exit-activated': (GObject.SIGNAL_RUN_LAST, None, ()),
     }
-    # FIXME: implement new window button and request with Ctrl+N.
+    # FIXME: implement new window combo with Ctrl+N.
     # FIXME: implement quit and request with Ctrl+Q.
     # https://developer.gnome.org/gtk3/stable/gtk3-Bindings.html
 
@@ -34,12 +36,21 @@ class SimpleGTDMainWindow(Gtk.ApplicationWindow, simplegtd.rememberingwindow.Rem
         choosefile_button = Gtk.Button.new_from_icon_name("document-open", Gtk.IconSize.LARGE_TOOLBAR)
         choosefile_button.connect("clicked", lambda _: self.emit("open-file-activated"))
 
+        new_view_button = Gtk.Button.new_from_icon_name("window-new", Gtk.IconSize.LARGE_TOOLBAR)
+        new_view_button.connect("clicked", lambda _: self.emit("new-window-activated"))
+
+        exit_button = Gtk.Button.new_from_icon_name("application-exit", Gtk.IconSize.LARGE_TOOLBAR)
+        exit_button.connect("clicked", lambda _: self.emit("exit-activated"))
+
         header_bar = Gtk.HeaderBar()
         header_bar.set_property('expand', False)
         header_bar.set_title('Tasks')
-        header_bar.set_subtitle(shorten_path(todotxt.name()))
+        header_bar.set_subtitle(shorten_path(todotxt.name() or "(no file)"))
         header_bar.set_show_close_button(True)
-        header_bar.pack_start(choosefile_button)
+        header_bar.pack_end(exit_button)
+        header_bar.pack_end(new_view_button)
+        header_bar.pack_end(choosefile_button)
+
         self.set_titlebar(header_bar)
 
         self.task_view = simplegtd.views.TaskView()

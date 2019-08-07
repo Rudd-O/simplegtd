@@ -71,11 +71,11 @@ class SimpleGTD(Gtk.Application, _SimpleGTDAppState):
         self.connect("window-removed", self.todo_window_removed)
         self.models_to_windows = {}
 
-    def open_file_activated(self, requestor):
+    def delegate_open_file_activated(self, requestor):
         choosefile_dialog = Gtk.FileChooserDialog(
-            title="Select an existing TODO.TXT file",
+            title="Select an existing TODO.TXT file or create a new one",
             parent=requestor,
-            action=Gtk.FileChooserAction.OPEN,
+            action=Gtk.FileChooserAction.SAVE,
             buttons=(
                 Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
                 Gtk.STOCK_OPEN, Gtk.ResponseType.OK,
@@ -90,6 +90,14 @@ class SimpleGTD(Gtk.Application, _SimpleGTDAppState):
             self.add_new_todo_window(self.default_todo_txt)
         choosefile_dialog.destroy()
 
+    def delegate_new_window_activated(self, requestor):
+        for data_file, (unused_model, windows) in self.models_to_windows.items():
+            if requestor in windows:
+                self.add_new_todo_window(data_file)
+
+    def delegate_exit_activated(self, unused_requestor):
+        self.quit()
+
     def add_new_todo_window(self, data_file):
         try:
             if data_file in self.models_to_windows:
@@ -101,7 +109,9 @@ class SimpleGTD(Gtk.Application, _SimpleGTDAppState):
             if data_file not in self.models_to_windows:
                 self.models_to_windows[data_file] = (model, [])
             self.models_to_windows[data_file][1].append(window)
-            window.connect("open-file-activated", self.open_file_activated)
+            window.connect("open-file-activated", self.delegate_open_file_activated)
+            window.connect("new-window-activated", self.delegate_new_window_activated)
+            window.connect("exit-activated", self.delegate_exit_activated)
             window.connect("destroy", self.remove_window)
             window.show_all()
         except BaseException:

@@ -35,7 +35,7 @@ class TodoTxt(Gtk.ListStore):
                 self.__load()
 
     def name(self):
-        return self.todofile or "(no file)"
+        return self.todofile
 
     @classmethod
     def from_file(klass, filename):
