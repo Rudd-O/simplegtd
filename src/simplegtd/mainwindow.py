@@ -35,7 +35,6 @@ class SimpleGTDMainWindow(Gtk.ApplicationWindow, simplegtd.rememberingwindow.Rem
         Gtk.ApplicationWindow.__init__(self)
         self.set_default_size(800, 600)
         simplegtd.rememberingwindow.RememberingWindow.__init__(self, window_state_file)
-        self.set_title('Simple GTD')
 
         accel_group = Gtk.AccelGroup()
         self.add_accel_group(accel_group)
@@ -45,7 +44,12 @@ class SimpleGTDMainWindow(Gtk.ApplicationWindow, simplegtd.rememberingwindow.Rem
 
         header_bar = Gtk.HeaderBar()
         header_bar.set_property('expand', False)
-        header_bar.set_title('Tasks')
+        if todotxt.name():
+            header_bar.set_title('Simple GTD (%s)' % os.path.basename(todotxt.name()))
+            self.set_title('Simple GTD (%s)' % os.path.basename(todotxt.name()))
+        else:
+            header_bar.set_title('Simple GTD')
+            self.set_title('Simple GTD')
         header_bar.set_subtitle(shorten_path(todotxt.name() or "(no file)"))
         header_bar.set_show_close_button(True)
         self.set_titlebar(header_bar)
