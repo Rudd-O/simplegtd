@@ -1,10 +1,9 @@
-* support todo.txt / done.txt
-* dynamic toolbar
-  * show buttons based on which pane is focused
-* toolbar actions: add / remove tasks
-  * use global shortcut key event handler rather than taskview key event handler
-    * maybe not -- the actions should only be available when taskview is focused, toolbar is supposed to change dynamically
-* mark selected task(s) as complete with keyboard (F12 to toggle, figure out if a checkbox is also worth trying)
+@next +robustness single-app model with remote-open, to prevent overwriting of the list of opened files by two separate copies of the app
+@tickler +feature support todo.txt / done.txt (moving done tasks to a done.txt file, like Thunderbird's GTD)
+@tickler +ui dynamic toolbar -- show which buttons on the toolbar based on which pane is focused.
+@tickler +ui toolbar actions: add / remove tasks when focused on task view.  open question: should add task keyboard shortcut work when task view is not in focus?
+@tickler +ui improve how things look when they are highlighted, and make which pane is focused more obvious
+@next +ui mark selected task(s) as complete with keyboard (F12 to toggle, figure out if a checkbox is also worth trying)
 * more toolbar actions (activatable via hotkeys) that apply to selection: add remove tags / lists with a popover menu / possibly typeahead find
 * context menus to do all the above
 * custom filters with filter language (implement task objects)
@@ -15,12 +14,9 @@
   * this is gonna look awesome, we will overlay a widget that will display +tags and @cats and other metadata with nice boxes
 * automatic creation date addition
 * undo capability
-
-
-# Features completed
-
-* search filter box
-* exit app toolbar button and key combo
-* multi-window: allow new window to be created with key combo and toolbar button
-* multi-window: open a file to create an entirely new window
-* configure where todo.txt / done.txt are saved
++robustness @next ensure that trying to load invalid non-utf-8 files actually displays an error instead of silently failing and leaving half-initialized stuff
+x search filter box
+x exit app toolbar button and key combo
+x multi-window: allow new window to be created with key combo and toolbar button
+x multi-window: open a file to create an entirely new window
+x configure where todo.txt / done.txt are saved
