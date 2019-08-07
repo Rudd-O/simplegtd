@@ -1,10 +1,9 @@
+* support todo.txt / done.txt
 * dynamic toolbar
   * show buttons based on which pane is focused
 * toolbar actions: add / remove tasks
   * use global shortcut key event handler rather than taskview key event handler
 * mark selected task(s) as complete with keyboard (F12 to toggle, figure out if a checkbox is also worth trying)
-* support todo.txt / done.txt
-* configure where todo.txt / done.txt are saved
 * more toolbar actions (activatable via hotkeys) that apply to selection: add remove tags / lists with a popover menu / possibly typeahead find
 * context menus to do all the above
 * custom filters with filter language (implement task objects)
@@ -13,3 +12,11 @@
 * fast data entry (possibly with autocomplete tags and lists)
   * this may require moving away from the simple text box we use for entry right now
 * automatic creation date addition
+* multi-window: allow new window to be created with key combo and toolbar button
+* exit app toolbar button and key combo
+
+
+# Features completed
+
+* multi-window: open a file to create an entirely new window
+* configure where todo.txt / done.txt are saved
