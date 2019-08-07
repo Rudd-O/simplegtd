@@ -3,7 +3,7 @@ import os
 import gi
 gi.require_version('Gdk', '3.0')
 gi.require_version('Gtk', '3.0')
-from gi.repository import GObject, GLib, Gtk
+from gi.repository import GObject, GLib, Gdk, Gtk
 
 import simplegtd.rememberingwindow
 import simplegtd.filterlist
@@ -19,9 +19,10 @@ def shorten_path(filename):
 class SimpleGTDMainWindow(Gtk.ApplicationWindow, simplegtd.rememberingwindow.RememberingWindow):
 
     __gsignals__ = {
-        'open-file-activated': (GObject.SIGNAL_RUN_LAST, None, ()),
-        'new-window-activated': (GObject.SIGNAL_RUN_LAST, None, ()),
-        'exit-activated': (GObject.SIGNAL_RUN_LAST, None, ()),
+        'open-file-activated': (GObject.SIGNAL_RUN_LAST | GObject.SIGNAL_ACTION, None, ()),
+        'new-window-activated': (GObject.SIGNAL_RUN_LAST | GObject.SIGNAL_ACTION, None, ()),
+        'close-window-activated': (GObject.SIGNAL_RUN_LAST | GObject.SIGNAL_ACTION, None, ()),
+        'exit-activated': (GObject.SIGNAL_RUN_LAST | GObject.SIGNAL_ACTION, None, ()),
     }
     # FIXME: implement new window combo with Ctrl+N.
     # FIXME: implement quit and request with Ctrl+Q.
@@ -33,23 +34,35 @@ class SimpleGTDMainWindow(Gtk.ApplicationWindow, simplegtd.rememberingwindow.Rem
         simplegtd.rememberingwindow.RememberingWindow.__init__(self, window_state_file)
         self.set_title('Simple GTD')
 
-        choosefile_button = Gtk.Button.new_from_icon_name("document-open", Gtk.IconSize.LARGE_TOOLBAR)
-        choosefile_button.connect("clicked", lambda _: self.emit("open-file-activated"))
+        accel_group = Gtk.AccelGroup()
+        self.add_accel_group(accel_group)
 
-        new_view_button = Gtk.Button.new_from_icon_name("window-new", Gtk.IconSize.LARGE_TOOLBAR)
-        new_view_button.connect("clicked", lambda _: self.emit("new-window-activated"))
-
-        exit_button = Gtk.Button.new_from_icon_name("application-exit", Gtk.IconSize.LARGE_TOOLBAR)
-        exit_button.connect("clicked", lambda _: self.emit("exit-activated"))
+        self.add_accelerator("close-window-activated", accel_group, ord('w'), Gdk.ModifierType.CONTROL_MASK, 0)
+        self.connect("close-window-activated", lambda _: self.destroy())
 
         header_bar = Gtk.HeaderBar()
         header_bar.set_property('expand', False)
         header_bar.set_title('Tasks')
         header_bar.set_subtitle(shorten_path(todotxt.name() or "(no file)"))
         header_bar.set_show_close_button(True)
+
+        exit_button = Gtk.Button.new_from_icon_name("application-exit", Gtk.IconSize.LARGE_TOOLBAR)
+        exit_button.connect("clicked", lambda _: self.emit("exit-activated"))
+        self.add_accelerator("exit-activated", accel_group, ord('q'), Gdk.ModifierType.CONTROL_MASK, 0)
         header_bar.pack_end(exit_button)
+
+        new_view_button = Gtk.Button.new_from_icon_name("window-new", Gtk.IconSize.LARGE_TOOLBAR)
+        new_view_button.connect("clicked", lambda _: self.emit("new-window-activated"))
+        self.add_accelerator("new-window-activated", accel_group, ord('n'), Gdk.ModifierType.CONTROL_MASK, 0)
         header_bar.pack_end(new_view_button)
+
+        choosefile_button = Gtk.Button.new_from_icon_name("document-open", Gtk.IconSize.LARGE_TOOLBAR)
+        choosefile_button.connect("clicked", lambda _: self.emit("open-file-activated"))
+        self.add_accelerator("open-file-activated", accel_group, ord('o'), Gdk.ModifierType.CONTROL_MASK, 0)
         header_bar.pack_end(choosefile_button)
+
+#         shortcut_quit.add_accelerator
+#         shortcuts_group = Gtk.ShortcutsGroup()
 
         self.set_titlebar(header_bar)
 
