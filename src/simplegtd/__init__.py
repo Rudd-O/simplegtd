@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-__version__ = "0.0.3"
+__version__ = "0.0.4"
 
 
 import collections
@@ -23,9 +23,9 @@ class SimpleGTDMainWindow(Gtk.ApplicationWindow, simplegtd.rememberingwindow.Rem
 
     def __init__(self, todotxt, window_state_file):
         Gtk.ApplicationWindow.__init__(self)
+        self.set_default_size(800, 600)
         simplegtd.rememberingwindow.RememberingWindow.__init__(self, window_state_file)
         self.set_title('Simple GTD')
-        self.set_default_size(800, 600)
 
         header_bar = Gtk.HeaderBar()
         header_bar.set_property('expand', False)
