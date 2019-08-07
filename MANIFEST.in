@@ -4,3 +4,4 @@ include applications/*.desktop
 include test/*py
 include test/testdata/*
 include test/dogtail/*.py
+include data/*

@@ -31,11 +31,16 @@ programs = [
     "simplegtd",
 ]
 
+ui_files = [
+    "shortcuts-window.ui",
+]
+
 # https://github.com/Rudd-O/ledgerhelpers/issues/3
 # Don't write to /usr/share/applications on OS X to work around the
 # 'System Integrity Protection'.
 data_files = [
 	("/usr/share/applications", ["applications/%s.desktop" % p for p in programs]),
+	("/usr/share/simplegtd", ["data/%s" % p for p in ui_files]),
 ] if platform.system() != 'Darwin' else []
 
 setup(

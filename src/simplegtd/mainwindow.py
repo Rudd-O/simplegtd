@@ -7,6 +7,7 @@ from gi.repository import GObject, GLib, Gdk, Gtk
 
 import simplegtd.rememberingwindow
 import simplegtd.filterlist
+import simplegtd.resource
 import simplegtd.views
 
 
@@ -23,6 +24,7 @@ class SimpleGTDMainWindow(Gtk.ApplicationWindow, simplegtd.rememberingwindow.Rem
         'new-window-activated': (GObject.SIGNAL_RUN_LAST | GObject.SIGNAL_ACTION, None, ()),
         'close-window-activated': (GObject.SIGNAL_RUN_LAST | GObject.SIGNAL_ACTION, None, ()),
         'exit-activated': (GObject.SIGNAL_RUN_LAST | GObject.SIGNAL_ACTION, None, ()),
+        'help-activated': (GObject.SIGNAL_RUN_LAST | GObject.SIGNAL_ACTION, None, ()),
     }
     # FIXME: implement new window combo with Ctrl+N.
     # FIXME: implement quit and request with Ctrl+Q.
@@ -45,6 +47,7 @@ class SimpleGTDMainWindow(Gtk.ApplicationWindow, simplegtd.rememberingwindow.Rem
         header_bar.set_title('Tasks')
         header_bar.set_subtitle(shorten_path(todotxt.name() or "(no file)"))
         header_bar.set_show_close_button(True)
+        self.set_titlebar(header_bar)
 
         exit_button = Gtk.Button.new_from_icon_name("application-exit", Gtk.IconSize.LARGE_TOOLBAR)
         exit_button.connect("clicked", lambda _: self.emit("exit-activated"))
@@ -61,10 +64,11 @@ class SimpleGTDMainWindow(Gtk.ApplicationWindow, simplegtd.rememberingwindow.Rem
         self.add_accelerator("open-file-activated", accel_group, ord('o'), Gdk.ModifierType.CONTROL_MASK, 0)
         header_bar.pack_end(choosefile_button)
 
-#         shortcut_quit.add_accelerator
-#         shortcuts_group = Gtk.ShortcutsGroup()
-
-        self.set_titlebar(header_bar)
+        help_button = Gtk.Button.new_from_icon_name("system-help", Gtk.IconSize.LARGE_TOOLBAR)
+        help_button.connect("clicked", lambda _: self.show_shortcuts_window())
+        self.add_accelerator("help-activated", accel_group, Gdk.KEY_F1, 0, 0)
+        self.connect("help-activated", lambda _: self.show_shortcuts_window())
+        header_bar.pack_end(help_button)
 
         self.task_view = simplegtd.views.TaskView()
         task_view_scroller = Gtk.ScrolledWindow()
@@ -95,3 +99,12 @@ class SimpleGTDMainWindow(Gtk.ApplicationWindow, simplegtd.rememberingwindow.Rem
     def filter_selection_changed(self, tree_selection):
         filter_strings = self.filter_view.get_filters_from_selection(tree_selection)
         self.task_view.set_filters(filter_strings)
+
+    def show_shortcuts_window(self):
+        builder = Gtk.Builder()
+        builder.add_from_file(simplegtd.resource.find_data_file("shortcuts-window.ui"))
+        shortcuts_window = builder.get_object("shortcuts-simplegtd")
+        shortcuts_window.set_transient_for(self)
+        shortcuts_window.show_all()
+        shortcuts_window.set_property("view-name", "")
+        shortcuts_window.set_property("section-name", "shortcuts")
