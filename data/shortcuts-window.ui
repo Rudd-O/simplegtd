@@ -8,6 +8,40 @@
         <property name="section-name">shortcuts</property>
         <child>
           <object class="GtkShortcutsGroup">
+            <property name="title" translatable="yes">Navigating</property>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="accelerator">&lt;ctrl&gt;F</property>
+                <property name="title" translatable="yes">Search for tasks</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="accelerator">Tab &lt;shift&gt;Tab</property>
+                <property name="title" translatable="yes">Focus task list, search, categories</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkShortcutsGroup">
+            <property name="title" translatable="yes">Editing tasks</property>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="accelerator">Insert +</property>
+                <property name="title" translatable="yes">Insert new task</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="accelerator">Delete</property>
+                <property name="title" translatable="yes">Remove selected tasks</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkShortcutsGroup">
             <property name="title" translatable="yes">Global</property>
             <child>
               <object class="GtkShortcutsShortcut">
@@ -24,24 +58,13 @@
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="accelerator">&lt;ctrl&gt;W</property>
-                <property name="title" translatable="yes">Close the view</property>
+                <property name="title" translatable="yes">Close the to-do list</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="accelerator">&lt;ctrl&gt;Q</property>
                 <property name="title" translatable="yes">Quit SimpleGTD</property>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkShortcutsGroup">
-            <property name="title" translatable="yes">In to-do lists</property>
-            <child>
-              <object class="GtkShortcutsShortcut">
-                <property name="accelerator">Insert</property>
-                <property name="title" translatable="yes">Insert new task</property>
               </object>
             </child>
           </object>

@@ -3,6 +3,7 @@
   * show buttons based on which pane is focused
 * toolbar actions: add / remove tasks
   * use global shortcut key event handler rather than taskview key event handler
+    * maybe not -- the actions should only be available when taskview is focused, toolbar is supposed to change dynamically
 * mark selected task(s) as complete with keyboard (F12 to toggle, figure out if a checkbox is also worth trying)
 * more toolbar actions (activatable via hotkeys) that apply to selection: add remove tags / lists with a popover menu / possibly typeahead find
 * context menus to do all the above
@@ -11,12 +12,14 @@
 * grouping
 * fast data entry (possibly with autocomplete tags and lists)
   * this may require moving away from the simple text box we use for entry right now
+  * this is gonna look awesome, we will overlay a widget that will display +tags and @cats and other metadata with nice boxes
 * automatic creation date addition
-* multi-window: allow new window to be created with key combo and toolbar button
-* exit app toolbar button and key combo
 
 
 # Features completed
 
+* search filter box
+* exit app toolbar button and key combo
+* multi-window: allow new window to be created with key combo and toolbar button
 * multi-window: open a file to create an entirely new window
 * configure where todo.txt / done.txt are saved

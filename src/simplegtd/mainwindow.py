@@ -25,12 +25,13 @@ class SimpleGTDMainWindow(Gtk.ApplicationWindow, simplegtd.rememberingwindow.Rem
         'close-window-activated': (GObject.SIGNAL_RUN_LAST | GObject.SIGNAL_ACTION, None, ()),
         'exit-activated': (GObject.SIGNAL_RUN_LAST | GObject.SIGNAL_ACTION, None, ()),
         'help-activated': (GObject.SIGNAL_RUN_LAST | GObject.SIGNAL_ACTION, None, ()),
+        'text-filter-focus-request': (GObject.SIGNAL_RUN_LAST | GObject.SIGNAL_ACTION, None, ()),
     }
-    # FIXME: implement new window combo with Ctrl+N.
-    # FIXME: implement quit and request with Ctrl+Q.
-    # https://developer.gnome.org/gtk3/stable/gtk3-Bindings.html
 
     def __init__(self, todotxt, window_state_file):
+        self.selection_filters = []
+        self.search_filters = []
+
         Gtk.ApplicationWindow.__init__(self)
         self.set_default_size(800, 600)
         simplegtd.rememberingwindow.RememberingWindow.__init__(self, window_state_file)
@@ -48,6 +49,15 @@ class SimpleGTDMainWindow(Gtk.ApplicationWindow, simplegtd.rememberingwindow.Rem
         header_bar.set_subtitle(shorten_path(todotxt.name() or "(no file)"))
         header_bar.set_show_close_button(True)
         self.set_titlebar(header_bar)
+
+        text_filter_entry = Gtk.SearchEntry()
+        text_filter_entry.set_placeholder_text("Search tasks...")
+        text_filter_entry.connect("search-changed", lambda entry: self.filter_text_changed(entry.get_text()))
+        text_filter_entry.connect("stop-search", lambda entry: entry.set_text("") or self.task_view.grab_focus())
+        text_filter_entry.connect("activate", lambda unused_entry: self.task_view.grab_focus())
+        self.add_accelerator("text-filter-focus-request", accel_group, ord('f'), Gdk.ModifierType.CONTROL_MASK, 0)
+        self.connect("text-filter-focus-request", lambda _: text_filter_entry.grab_focus())
+        header_bar.pack_start(text_filter_entry)
 
         exit_button = Gtk.Button.new_from_icon_name("application-exit", Gtk.IconSize.LARGE_TOOLBAR)
         exit_button.connect("clicked", lambda _: self.emit("exit-activated"))
@@ -98,7 +108,15 @@ class SimpleGTDMainWindow(Gtk.ApplicationWindow, simplegtd.rememberingwindow.Rem
 
     def filter_selection_changed(self, tree_selection):
         filter_strings = self.filter_view.get_filters_from_selection(tree_selection)
-        self.task_view.set_filters(filter_strings)
+        self.selection_filters = filter_strings
+        self.task_view.set_filters(self.selection_filters + self.search_filters)
+
+    def filter_text_changed(self, new_text):
+        filter_strings = []
+        if new_text.strip():
+            filter_strings.append(new_text.strip())
+        self.search_filters = filter_strings
+        self.task_view.set_filters(self.selection_filters + self.search_filters)
 
     def show_shortcuts_window(self):
         builder = Gtk.Builder()
