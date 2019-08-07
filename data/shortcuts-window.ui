@@ -2,7 +2,7 @@
 <interface>
   <object class="GtkShortcutsWindow" id="shortcuts-simplegtd">
     <property name="modal">1</property>
-    <property name="title">SimpleGTD shortcuts guide</property>
+    <property name="title">Simple GTD shortcuts guide</property>
     <child>
       <object class="GtkShortcutsSection">
         <property name="section-name">shortcuts</property>
@@ -64,7 +64,7 @@
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="accelerator">&lt;ctrl&gt;Q</property>
-                <property name="title" translatable="yes">Quit SimpleGTD</property>
+                <property name="title" translatable="yes">Quit Simple GTD</property>
               </object>
             </child>
           </object>

@@ -50,7 +50,7 @@ setup(
 	long_description = readme,
 	author='Manuel Amador (Rudd-O)',
 	author_email='rudd-o@rudd-o.com',
-	license="GPLv2+",
+	license="GPLv3+",
 	url='http://github.com/Rudd-O/simplegtd',
 	package_dir=dict([
                     ("simplegtd", "src/simplegtd"),

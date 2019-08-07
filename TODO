@@ -14,6 +14,7 @@
   * this may require moving away from the simple text box we use for entry right now
   * this is gonna look awesome, we will overlay a widget that will display +tags and @cats and other metadata with nice boxes
 * automatic creation date addition
+* undo capability
 
 
 # Features completed

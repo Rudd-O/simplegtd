@@ -1,7 +1,8 @@
 include README.md
+include TODO
+include LICENSE.txt
 include doc/*
 include applications/*.desktop
-include test/*py
+include tests/*.py
 include test/testdata/*
-include test/dogtail/*.py
 include data/*
