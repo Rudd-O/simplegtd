@@ -49,15 +49,14 @@ class TaskView(Gtk.TreeView):
                 filtered_iter = filtered_model[path].iter
                 pos = filtered_model.convert_iter_to_child_iter(filtered_iter)
                 break
-            if pos:
-                new_row_iter = underlying_model.new_at(pos)
-                self.editing_iter = new_row_iter
-                got_set, new_filtered_row_iter = filtered_model.convert_child_iter_to_iter(new_row_iter)
-                if got_set:
-                    self.get_selection().unselect_all()
-                    self.get_selection().select_iter(new_filtered_row_iter)
-                    self.scroll_to_cell(filtered_model.get_path(new_filtered_row_iter), self.column)
-                    self.set_cursor(filtered_model.get_path(new_filtered_row_iter), self.column, True)
+            new_row_iter = underlying_model.new_at(pos)
+            self.editing_iter = new_row_iter
+            got_set, new_filtered_row_iter = filtered_model.convert_child_iter_to_iter(new_row_iter)
+            if got_set:
+                self.get_selection().unselect_all()
+                self.get_selection().select_iter(new_filtered_row_iter)
+                self.scroll_to_cell(filtered_model.get_path(new_filtered_row_iter), self.column)
+                self.set_cursor(filtered_model.get_path(new_filtered_row_iter), self.column, True)
 
     def task_editing_canceled(self, unused_renderer):
         if self.editing_iter:

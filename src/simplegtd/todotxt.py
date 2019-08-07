@@ -58,8 +58,11 @@ class TodoTxt(Gtk.ListStore):
         self.__save()
 
     def new_at(self, iter_):
-        path = self.get_path(iter_)
-        row = path[0]
+        if iter_ is not None:
+            path = self.get_path(iter_)
+            row = path[0]
+        else:
+            row = 0
         new_iter = Gtk.ListStore.insert(self, row, ["", ""])
         return new_iter
 
