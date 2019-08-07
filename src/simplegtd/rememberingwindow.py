@@ -2,7 +2,7 @@
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import GLib, Gdk, Gtk
+from gi.repository import GLib, Gdk
 
 
 class _WindowState(object):
@@ -52,9 +52,12 @@ class RememberingWindow(object):
     its onscreen position, given a state file to store this info.'''
 
     def __init__(self, state_file):
+        '''Please invoke this method after initializing the Gtk.Window
+        or Gtk.ApplicationWindow you're mixing this class into, and
+        also after any calls to the window's set_default_size() method.
+        '''
         self.__state_file = state_file
         self.__window_state = _WindowState.from_keyfile(self.__state_file)
-        Gtk.ApplicationWindow.__init__(self)
         if (self.__window_state.current_width is not None
             and self.__window_state.current_height is not None):
             self.set_default_size(self.__window_state.current_width,
@@ -68,7 +71,12 @@ class RememberingWindow(object):
         self.connect("destroy", self.on_destroy)
 
     def on_size_allocate(self, unused_window, allocation):
-        Gtk.ApplicationWindow.size_allocate(self, allocation)
+        for base_ in self.__class__.__bases__:
+            if self.__class__.__bases__ == self.__class__:
+                continue
+            base_.size_allocate(self, allocation)
+            break
+            
         if (not (self.__window_state.is_maximized or self.__window_state.is_fullscreen)):
             s = self.get_size()
             self.__window_state.current_width = s.width
