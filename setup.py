@@ -62,5 +62,5 @@ setup(
 	scripts=["bin/%s" % p for p in programs],
 	keywords="gtd getting things done TODO.TXT",
 	zip_safe=False,
-	install_requires=['xdg'],
+	install_requires=['pyxdg'],
 )
