@@ -49,7 +49,11 @@ class _WindowState(object):
 
 class RememberingWindow(object):
     '''Mixin class for Gtk.Window and Gtk.ApplicationWindow that remembers
-    its onscreen position, given a state file to store this info.'''
+    its onscreen position, given a state file to store this info.
+
+    Derived (perhaps imperfectly) from:
+    https://wiki.gnome.org/HowDoI/SaveWindowState
+    '''
 
     def __init__(self, state_file):
         '''Please invoke this method after initializing the Gtk.Window
