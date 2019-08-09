@@ -24,7 +24,8 @@ classifiers = [
 'Operating System :: POSIX :: Linux',
 'Programming Language :: Python :: 3 :: Only',
 'Programming Language :: Python :: 3.6',
-'Topic :: Office/Business :: Financial :: Accounting',
+'Topic :: Office/Business :: Scheduling',
+'Topic :: Office/Business :: Groupware',
 ]
 
 programs = [
@@ -46,12 +47,12 @@ data_files = [
 setup(
 	name='simplegtd',
 	version=version,
-	description='An extremely simple, bare-bones GTD app',
+	description='Manage your to-do list using the Getting Things Done system.',
 	long_description = readme,
 	author='Manuel Amador (Rudd-O)',
 	author_email='rudd-o@rudd-o.com',
 	license="GPLv3+",
-	url='http://github.com/Rudd-O/simplegtd',
+	url='https://pypi.org/project/simplegtd/',
 	package_dir=dict([
                     ("simplegtd", "src/simplegtd"),
 					]),
@@ -59,7 +60,7 @@ setup(
 	packages=["simplegtd"],
 	data_files = data_files,
 	scripts=["bin/%s" % p for p in programs],
-	keywords="gtd getting things done",
+	keywords="gtd getting things done TODO.TXT",
 	zip_safe=False,
 	install_requires=['xdg'],
 )
