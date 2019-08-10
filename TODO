@@ -1,3 +1,5 @@
+@tickler +ui Stronger data model for tasks (required for better display of tasks)
+@tickler +ui Improve display of task count (requires stronger data model for tasks)
 @tickler +ui how to handle the menu https://wiki.gnome.org/HowDoI/GMenu
 @tickler +releases use GtkApplication or GApplication with app ids https://wiki.gnome.org/HowDoI/ChooseApplicationID
 @next +robustness single-app model with remote-open, to prevent overwriting of the list of opened files by two separate copies of the app
@@ -16,7 +18,7 @@
   * this is gonna look awesome, we will overlay a widget that will display +tags and @cats and other metadata with nice boxes
 * automatic creation date addition
 * undo capability
-+robustness @next ensure that trying to load invalid non-utf-8 files actually displays an error instead of silently failing and leaving half-initialized stuff
++robustness @next ensure that trying to load invalid non-utf-8 files actually displays an error instead of silently failing and leaving half-initialized stuff (requires error dialog box in libwhiz)
 x search filter box
 x exit app toolbar button and key combo
 x multi-window: allow new window to be created with key combo and toolbar button

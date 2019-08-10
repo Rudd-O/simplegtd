@@ -36,6 +36,8 @@ class SimpleGTDMainWindow(Gtk.ApplicationWindow, simplegtd.libwhiz.rememberingwi
         'text-filter-focus-request': (GObject.SIGNAL_RUN_LAST | GObject.SIGNAL_ACTION, None, ()),
     }
 
+    header_bar = Gtk.HeaderBar
+
     def __init__(self, todotxt, window_state_file):
         self.selection_filters = []
         self.search_filters = []
@@ -51,14 +53,15 @@ class SimpleGTDMainWindow(Gtk.ApplicationWindow, simplegtd.libwhiz.rememberingwi
         self.connect("close-window-activated", lambda _: self.destroy())
 
         header_bar = Gtk.HeaderBar()
+        self.header_bar = header_bar
         header_bar.set_property('expand', False)
+        header_bar.set_show_close_button(True)
 
         [x(make_title(todotxt)) for x in (header_bar.set_title, self.set_title)]
-
-        # FIXME: use subtitle to list total and outstanding tasks, filtered and non-filtered
-        header_bar.set_subtitle(simplegtd.libwhiz.path.abbrev_home(todotxt.name() or "(no file)"))
-        header_bar.set_show_close_button(True)
         self.set_titlebar(header_bar)
+        todotxt.connect("row-inserted", self.recompute_subtitle)
+        todotxt.connect("row-deleted", self.recompute_subtitle)
+        self.recompute_subtitle(todotxt)
 
         text_filter_entry = Gtk.SearchEntry()
         text_filter_entry.set_placeholder_text("Search tasks...")
@@ -115,6 +118,15 @@ class SimpleGTDMainWindow(Gtk.ApplicationWindow, simplegtd.libwhiz.rememberingwi
 
         self.add(paned)
         self.task_view.grab_focus()
+
+    def recompute_subtitle(self, model, *unused_args):
+        # FIXME we need to show outstanding tasks rather than all tasks
+        # (that requires a richer data model for the tasks stored in the
+        # model) and we also require to show which ones are hidden by filters
+        # as well as what filter is being used.  Perhaps a "last modified
+        # n minutes ago" with a rough time would be useful.
+        numtasks = len(model)
+        self.header_bar.set_subtitle("%s tasks" % numtasks)
 
     def filter_selection_changed(self, tree_selection):
         filter_strings = self.filter_view.get_filters_from_selection(tree_selection)
