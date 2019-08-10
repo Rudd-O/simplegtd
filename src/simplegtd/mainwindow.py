@@ -11,6 +11,20 @@ import simplegtd.libwhiz.path
 import simplegtd.views
 
 
+def make_title(todotxt):
+    if todotxt.name():
+        n = todotxt.name()
+        bn = os.path.basename(n)
+        dn = simplegtd.libwhiz.path.strip_data_home(os.path.dirname(n))
+        if dn:
+            dn = simplegtd.libwhiz.path.abbrev_home(dn)
+            title = "%s (%s)" % (bn, dn)
+        else:
+            title = "%s" % bn
+        return title
+    return 'Simple GTD (in memory)'
+
+
 class SimpleGTDMainWindow(Gtk.ApplicationWindow, simplegtd.libwhiz.rememberingwindow.RememberingWindow):
 
     __gsignals__ = {
@@ -38,20 +52,9 @@ class SimpleGTDMainWindow(Gtk.ApplicationWindow, simplegtd.libwhiz.rememberingwi
 
         header_bar = Gtk.HeaderBar()
         header_bar.set_property('expand', False)
-        if todotxt.name():
-            n = todotxt.name()
-            bn = os.path.basename(n)
-            dn = simplegtd.libwhiz.path.strip_data_home(os.path.dirname(n))
-            if dn:
-                dn = simplegtd.libwhiz.path.abbrev_home(dn)
-                title = "%s (%s)" % (bn, dn)
-            else:
-                title = "%s" % bn
-            header_bar.set_title(title)
-            self.set_title(title)
-        else:
-            header_bar.set_title('Simple GTD (in memory)')
-            self.set_title('Simple GTD (in memory)')
+
+        [x(make_title(todotxt)) for x in (header_bar.set_title, self.set_title)]
+
         # FIXME: use subtitle to list total and outstanding tasks, filtered and non-filtered
         header_bar.set_subtitle(simplegtd.libwhiz.path.abbrev_home(todotxt.name() or "(no file)"))
         header_bar.set_show_close_button(True)
@@ -127,7 +130,14 @@ class SimpleGTDMainWindow(Gtk.ApplicationWindow, simplegtd.libwhiz.rememberingwi
 
     def show_shortcuts_window(self):
         builder = Gtk.Builder()
-        builder.add_from_file(simplegtd.libwhiz.path.find_data_file("shortcuts-window.ui"))
+        d, j = os.path.dirname, os.path.join
+        builder.add_from_file(
+            simplegtd.libwhiz.path.find_data_file(
+                "shortcuts-window.ui",
+                "simplegtd",
+                before=j(d(d(d(__file__))), "data")
+            )
+        )
         shortcuts_window = builder.get_object("shortcuts-simplegtd")
         shortcuts_window.set_transient_for(self)
         shortcuts_window.show_all()

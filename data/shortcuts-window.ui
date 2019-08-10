@@ -28,7 +28,7 @@
             <property name="title" translatable="yes">Editing tasks</property>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="accelerator">Insert +</property>
+                <property name="accelerator">Insert plus</property>
                 <property name="title" translatable="yes">Insert new task</property>
               </object>
             </child>
