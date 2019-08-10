@@ -4,7 +4,6 @@ __version__ = "0.0.10"
 
 
 import collections
-import hashlib
 import os
 
 import gi
@@ -15,13 +14,6 @@ from gi.repository import GObject, GLib, Gdk, Gtk, Gio
 import simplegtd.todotxt
 import simplegtd.mainwindow
 import simplegtd.resource
-
-
-def hash_path(filename):
-    h = hashlib.md5()
-    h.update(filename.encode("utf-8", "ignore"))
-    h = h.hexdigest()
-    return h
 
 
 class _SimpleGTDAppState(object):
@@ -103,7 +95,12 @@ class SimpleGTD(Gtk.Application, _SimpleGTDAppState):
                 model = self.models_to_windows[data_file][0]
             else:
                 model = simplegtd.todotxt.TodoTxt.from_file(data_file)
-            window = simplegtd.mainwindow.SimpleGTDMainWindow(model, os.path.join(self.config_dir, "window-state-" + hash_path(data_file)))
+            window = simplegtd.mainwindow.SimpleGTDMainWindow(
+                model, os.path.join(
+                    self.config_dir,
+                    "window-state-" + simplegtd.resource.hash_path(data_file)
+                )
+            )
             self.add_window(window)
             if data_file not in self.models_to_windows:
                 self.models_to_windows[data_file] = (model, [])

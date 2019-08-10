@@ -1,3 +1,4 @@
+import hashlib
 import os
 
 import xdg.BaseDirectory
@@ -33,3 +34,10 @@ def shorten_path(filename):
     if filename.startswith(os.path.expanduser("~/")):
         filename = "~/" + filename[len(os.path.expanduser("~/")):]
     return filename
+
+
+def hash_path(filename):
+    h = hashlib.md5()
+    h.update(filename.encode("utf-8", "ignore"))
+    h = h.hexdigest()
+    return h

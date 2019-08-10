@@ -5,6 +5,23 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import GLib, Gdk
 
 
+def get_base_attr(klass, attr):
+    '''Retrieves a class attribute from one of the bases of self.
+
+    Arguments:
+        klass: The class you want to get the class base attribute from.
+
+    Returns:
+        The class attribute in question, or None if not found.
+    '''
+    for base_ in klass.__bases__:
+        if base_ == klass:
+            continue
+        if not hasattr(base_, attr):
+            continue
+        return getattr(base_, attr)
+
+
 class _WindowState(object):
 
     current_width = None
@@ -55,11 +72,28 @@ class RememberingWindow(object):
     https://wiki.gnome.org/HowDoI/SaveWindowState
     '''
 
+    __initialized = False
+
     def __init__(self, state_file):
-        '''Please invoke this method after initializing the Gtk.Window
-        or Gtk.ApplicationWindow you're mixing this class into, and
-        also after any calls to the window's set_default_size() method.
+        '''Initializes the RememberingWindow object.
+
+        Takes a path name where the window state will be saved.
+        Per XDG standards, we recommend a file inside the folder
+        `simplegtd.resource.config_dir()`.
+
+        If you call self.set_default_size() after initializing
+        this object, this object will not work as advertised. In other
+        words: please invoke self.__init__(state_file) after initializing
+        the Gtk.Window / Gtk.ApplicationWindow you're mixing this class
+        into, and also after any calls to self.set_default_size().
         '''
+        if not get_base_attr(self.__class__, "size_allocate"):
+            raise TypeError(
+                "%s must subclass a Gtk.Window or subclass thereof" % (
+                    self
+                )
+            )
+
         self.__state_file = state_file
         self.__window_state = _WindowState.from_keyfile(self.__state_file)
         if (self.__window_state.current_width is not None
@@ -73,13 +107,11 @@ class RememberingWindow(object):
         self.connect('size-allocate', self.on_size_allocate)
         self.connect('window-state-event', self.on_window_state_event)
         self.connect("destroy", self.on_destroy)
+        self.__initialized = True
 
     def on_size_allocate(self, unused_window, allocation):
-        for base_ in self.__class__.__bases__:
-            if self.__class__.__bases__ == self.__class__:
-                continue
-            base_.size_allocate(self, allocation)
-            break
+        size_allocate = get_base_attr(self.__class__, "size_allocate")
+        size_allocate(self, allocation)
             
         if (not (self.__window_state.is_maximized or self.__window_state.is_fullscreen)):
             s = self.get_size()
