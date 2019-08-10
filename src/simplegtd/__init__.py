@@ -46,9 +46,10 @@ class SimpleGTD(Gtk.Application, _SimpleGTDAppState):
 
     def __init__(self):
         Gtk.Application.__init__(self)
-        self.config_home = simplegtd.libwhiz.path.config_home()
-        self.data_dir = simplegtd.libwhiz.path.data_home()
-        for d in self.config_home, self.data_dir:
+        self.config_home = simplegtd.libwhiz.path.config_home("simplegtd")
+        self.data_dir = simplegtd.libwhiz.path.data_home("simplegtd")
+        self.cache_home = simplegtd.libwhiz.path.cache_home("simplegtd")
+        for d in self.config_home, self.data_dir, self.cache_home:
             if not os.path.isdir(d):
                 os.makedirs(d)
 
@@ -97,7 +98,7 @@ class SimpleGTD(Gtk.Application, _SimpleGTDAppState):
                 model = simplegtd.todotxt.TodoTxt.from_file(data_file)
             window = simplegtd.mainwindow.SimpleGTDMainWindow(
                 model, os.path.join(
-                    self.config_home,
+                    self.cache_home,
                     "window-state-" + simplegtd.libwhiz.path.hash_path(data_file)
                 )
             )

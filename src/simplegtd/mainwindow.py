@@ -43,7 +43,7 @@ class SimpleGTDMainWindow(Gtk.ApplicationWindow, simplegtd.libwhiz.rememberingwi
             bn = os.path.basename(n)
             dn = simplegtd.libwhiz.path.strip_data_home(os.path.dirname(n))
             if dn:
-                dn = simplegtd.libwhiz.path.strip_home(dn)
+                dn = simplegtd.libwhiz.path.abbrev_home(dn)
                 title = "%s (%s)" % (bn, dn)
             else:
                 title = "%s" % bn
@@ -53,7 +53,7 @@ class SimpleGTDMainWindow(Gtk.ApplicationWindow, simplegtd.libwhiz.rememberingwi
             header_bar.set_title('Simple GTD (in memory)')
             self.set_title('Simple GTD (in memory)')
         # FIXME: use subtitle to list total and outstanding tasks, filtered and non-filtered
-        header_bar.set_subtitle(simplegtd.libwhiz.path.strip_home(todotxt.name() or "(no file)"))
+        header_bar.set_subtitle(simplegtd.libwhiz.path.abbrev_home(todotxt.name() or "(no file)"))
         header_bar.set_show_close_button(True)
         self.set_titlebar(header_bar)
 

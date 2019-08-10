@@ -72,14 +72,12 @@ class RememberingWindow(object):
     https://wiki.gnome.org/HowDoI/SaveWindowState
     '''
 
-    __initialized = False
-
     def __init__(self, state_file):
         '''Initializes the RememberingWindow object.
 
         Takes a path name where the window state will be saved.
         Per XDG standards, we recommend a file inside the folder
-        `simplegtd.libwhiz.path.config_dir()`.
+        `simplegtd.libwhiz.path.cache_home(yourappname)`.
 
         If you call self.set_default_size() after initializing
         this object, this object will not work as advertised. In other
@@ -107,7 +105,6 @@ class RememberingWindow(object):
         self.connect('size-allocate', self.on_size_allocate)
         self.connect('window-state-event', self.on_window_state_event)
         self.connect("destroy", self.on_destroy)
-        self.__initialized = True
 
     def on_size_allocate(self, unused_window, allocation):
         size_allocate = get_base_attr(self.__class__, "size_allocate")

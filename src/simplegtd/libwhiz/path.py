@@ -16,12 +16,22 @@ def find_data_file(filename):
     raise KeyError(f)
 
 
-def config_home():
-    return os.path.join(xdg.BaseDirectory.xdg_config_home, "simplegtd")
+def config_home(subdir=None):
+    if subdir is None:
+        return xdg.BaseDirectory.xdg_config_home
+    return os.path.join(xdg.BaseDirectory.xdg_config_home, subdir)
 
 
-def data_home():
-    return os.path.join(xdg.BaseDirectory.xdg_data_home, "simplegtd")
+def data_home(subdir=None):
+    if subdir is None:
+        return xdg.BaseDirectory.xdg_data_home
+    return os.path.join(xdg.BaseDirectory.xdg_data_home, subdir)
+
+
+def cache_home(subdir=None):
+    if subdir is None:
+        return xdg.BaseDirectory.xdg_cache_home
+    return os.path.join(xdg.BaseDirectory.xdg_cache_home, subdir)
 
 
 def strip_data_home(path):
@@ -33,7 +43,7 @@ def strip_data_home(path):
     return path
 
 
-def strip_home(filename):
+def abbrev_home(filename):
     '''Given a path (relative or absolute), changes the path to use ~/
     notation if it is within $HOME, else returns the same path unchanged.'''
     absfilename = os.path.abspath(filename)
