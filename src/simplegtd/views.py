@@ -4,7 +4,7 @@ gi.require_version('Gdk', '3.0')
 gi.require_version('Gtk', '3.0')
 from gi.repository import Pango, Gdk, Gtk
 
-import simplegtd.css
+import simplegtd.libwhiz.css
 
 
 class TaskView(Gtk.TreeView):
@@ -140,7 +140,7 @@ class FilterView(Gtk.TreeView):
         renderer = Gtk.CellRendererText()
         renderer.ellipsize = Pango.EllipsizeMode.MIDDLE
         self.append_column(Gtk.TreeViewColumn("Filters", renderer, markup=3))
-        simplegtd.css.add(self.css)
+        simplegtd.libwhiz.css.add(self.css)
         self.get_style_context().add_class("filter_view")
 
     def set_model(self, model):

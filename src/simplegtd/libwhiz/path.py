@@ -16,7 +16,7 @@ def find_data_file(filename):
     raise KeyError(f)
 
 
-def config_dir():
+def config_home():
     return os.path.join(xdg.BaseDirectory.xdg_config_home, "simplegtd")
 
 
@@ -25,18 +25,25 @@ def data_home():
 
 
 def strip_data_home(path):
-    if path.startswith(data_home() + "/") or path == data_home():
-        return path[len(data_home()) + 1:]
+    '''Given a path (relative or absolute), strips the beginning of the path
+    if it begins with `data_home()`, else returns the same path unchanged.'''
+    abspath = os.path.abspath(path)
+    if abspath.startswith(data_home() + "/") or abspath == data_home():
+        return abspath[len(data_home()) + 1:]
     return path
 
 
-def shorten_path(filename):
-    if filename.startswith(os.path.expanduser("~/")):
-        filename = "~/" + filename[len(os.path.expanduser("~/")):]
+def strip_home(filename):
+    '''Given a path (relative or absolute), changes the path to use ~/
+    notation if it is within $HOME, else returns the same path unchanged.'''
+    absfilename = os.path.abspath(filename)
+    if absfilename.startswith(os.path.expanduser("~/")):
+        return "~/" + absfilename[len(os.path.expanduser("~/")):]
     return filename
 
 
 def hash_path(filename):
+    '''Returns an MD5 sum of a file name path.  Or any string, really.'''
     h = hashlib.md5()
     h.update(filename.encode("utf-8", "ignore"))
     h = h.hexdigest()

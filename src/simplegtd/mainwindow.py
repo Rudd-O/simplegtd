@@ -5,13 +5,13 @@ gi.require_version('Gdk', '3.0')
 gi.require_version('Gtk', '3.0')
 from gi.repository import GObject, GLib, Gdk, Gtk
 
-import simplegtd.rememberingwindow
+import simplegtd.libwhiz.rememberingwindow
 import simplegtd.filterlist
-import simplegtd.resource
+import simplegtd.libwhiz.path
 import simplegtd.views
 
 
-class SimpleGTDMainWindow(Gtk.ApplicationWindow, simplegtd.rememberingwindow.RememberingWindow):
+class SimpleGTDMainWindow(Gtk.ApplicationWindow, simplegtd.libwhiz.rememberingwindow.RememberingWindow):
 
     __gsignals__ = {
         'open-file-activated': (GObject.SIGNAL_RUN_LAST | GObject.SIGNAL_ACTION, None, ()),
@@ -28,7 +28,7 @@ class SimpleGTDMainWindow(Gtk.ApplicationWindow, simplegtd.rememberingwindow.Rem
 
         Gtk.ApplicationWindow.__init__(self)
         self.set_default_size(800, 600)
-        simplegtd.rememberingwindow.RememberingWindow.__init__(self, window_state_file)
+        simplegtd.libwhiz.rememberingwindow.RememberingWindow.__init__(self, window_state_file)
 
         accel_group = Gtk.AccelGroup()
         self.add_accel_group(accel_group)
@@ -41,9 +41,9 @@ class SimpleGTDMainWindow(Gtk.ApplicationWindow, simplegtd.rememberingwindow.Rem
         if todotxt.name():
             n = todotxt.name()
             bn = os.path.basename(n)
-            dn = simplegtd.resource.strip_data_home(os.path.dirname(n))
+            dn = simplegtd.libwhiz.path.strip_data_home(os.path.dirname(n))
             if dn:
-                dn = simplegtd.resource.shorten_path(dn)
+                dn = simplegtd.libwhiz.path.strip_home(dn)
                 title = "%s (%s)" % (bn, dn)
             else:
                 title = "%s" % bn
@@ -53,7 +53,7 @@ class SimpleGTDMainWindow(Gtk.ApplicationWindow, simplegtd.rememberingwindow.Rem
             header_bar.set_title('Simple GTD (in memory)')
             self.set_title('Simple GTD (in memory)')
         # FIXME: use subtitle to list total and outstanding tasks, filtered and non-filtered
-        header_bar.set_subtitle(simplegtd.resource.shorten_path(todotxt.name() or "(no file)"))
+        header_bar.set_subtitle(simplegtd.libwhiz.path.strip_home(todotxt.name() or "(no file)"))
         header_bar.set_show_close_button(True)
         self.set_titlebar(header_bar)
 
@@ -127,7 +127,7 @@ class SimpleGTDMainWindow(Gtk.ApplicationWindow, simplegtd.rememberingwindow.Rem
 
     def show_shortcuts_window(self):
         builder = Gtk.Builder()
-        builder.add_from_file(simplegtd.resource.find_data_file("shortcuts-window.ui"))
+        builder.add_from_file(simplegtd.libwhiz.path.find_data_file("shortcuts-window.ui"))
         shortcuts_window = builder.get_object("shortcuts-simplegtd")
         shortcuts_window.set_transient_for(self)
         shortcuts_window.show_all()

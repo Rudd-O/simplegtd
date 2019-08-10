@@ -13,7 +13,7 @@ from gi.repository import GObject, GLib, Gdk, Gtk, Gio
 
 import simplegtd.todotxt
 import simplegtd.mainwindow
-import simplegtd.resource
+import simplegtd.libwhiz.path
 
 
 class _SimpleGTDAppState(object):
@@ -46,13 +46,13 @@ class SimpleGTD(Gtk.Application, _SimpleGTDAppState):
 
     def __init__(self):
         Gtk.Application.__init__(self)
-        self.config_dir = simplegtd.resource.config_dir()
-        self.data_dir = simplegtd.resource.data_home()
-        for d in self.config_dir, self.data_dir:
+        self.config_home = simplegtd.libwhiz.path.config_home()
+        self.data_dir = simplegtd.libwhiz.path.data_home()
+        for d in self.config_home, self.data_dir:
             if not os.path.isdir(d):
                 os.makedirs(d)
 
-        settings_file = os.path.join(self.config_dir, "app-settings")
+        settings_file = os.path.join(self.config_home, "app-settings")
         _SimpleGTDAppState.__init__(self, settings_file)
         self.default_todo_txt = os.path.join(self.data_dir, "todo.txt")
         if not self.todo_txts:
@@ -97,8 +97,8 @@ class SimpleGTD(Gtk.Application, _SimpleGTDAppState):
                 model = simplegtd.todotxt.TodoTxt.from_file(data_file)
             window = simplegtd.mainwindow.SimpleGTDMainWindow(
                 model, os.path.join(
-                    self.config_dir,
-                    "window-state-" + simplegtd.resource.hash_path(data_file)
+                    self.config_home,
+                    "window-state-" + simplegtd.libwhiz.path.hash_path(data_file)
                 )
             )
             self.add_window(window)

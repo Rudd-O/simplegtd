@@ -79,7 +79,7 @@ class RememberingWindow(object):
 
         Takes a path name where the window state will be saved.
         Per XDG standards, we recommend a file inside the folder
-        `simplegtd.resource.config_dir()`.
+        `simplegtd.libwhiz.path.config_dir()`.
 
         If you call self.set_default_size() after initializing
         this object, this object will not work as advertised. In other
