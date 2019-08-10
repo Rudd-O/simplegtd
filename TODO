@@ -1,3 +1,4 @@
+@tickler +ui how to handle the menu https://wiki.gnome.org/HowDoI/GMenu
 @tickler +releases use GtkApplication or GApplication with app ids https://wiki.gnome.org/HowDoI/ChooseApplicationID
 @next +robustness single-app model with remote-open, to prevent overwriting of the list of opened files by two separate copies of the app
 @tickler +feature support todo.txt / done.txt (moving done tasks to a done.txt file, like Thunderbird's GTD)
