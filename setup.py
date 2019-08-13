@@ -57,7 +57,7 @@ setup(
                     ("simplegtd", "src/simplegtd"),
 					]),
 	classifiers = classifiers,
-	packages=["simplegtd"],
+	packages=["simplegtd", "simplegtd.libwhiz"],
 	data_files = data_files,
 	scripts=["bin/%s" % p for p in programs],
 	keywords="gtd getting things done TODO.TXT",
