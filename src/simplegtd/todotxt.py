@@ -29,9 +29,11 @@ class TodoTxt(Gtk.ListStore):
 
     def dir_changed(self, unused_monitor, unused_f, newf, event):
         if event == Gio.FileMonitorEvent.CHANGES_DONE_HINT:
+            self.logger.debug("Directory changed.  Reloading.")
             self.__load()
         elif event == Gio.FileMonitorEvent.RENAMED:
             if newf.get_basename() == os.path.basename(self.todofile):
+                self.logger.debug("A file was renamed to %s.  Reloading." % self.todofile)
                 self.__load()
 
     def name(self):
