@@ -59,9 +59,15 @@ class SimpleGTD(Gtk.Application, _SimpleGTDAppState):
         if not self.todo_txts:
             self.todo_txts = [self.default_todo_txt]
 
-        self.connect("activate", lambda _: [self.add_new_todo_window(x) for x in self.todo_txts] and None)
-        self.connect("window-removed", self.todo_window_removed)
+        self.connect("activate", self.on_activate)
+        self.connect("window-removed", self.on_todo_window_removed)
+        self.connect("shutdown", self.on_shutdown)
         self.models_to_windows = {}
+
+    def on_activate(self, *a):
+        logging.debug("Activate: %s", a)
+        for x in self.todo_txts:
+            self.add_new_todo_window(x)
 
     def delegate_open_file_activated(self, requestor):
         choosefile_dialog = Gtk.FileChooserDialog(
@@ -115,7 +121,7 @@ class SimpleGTD(Gtk.Application, _SimpleGTDAppState):
             Gtk.main_quit()
             raise
 
-    def todo_window_removed(self, unused_ref, window):
+    def on_todo_window_removed(self, unused_ref, window):
         for data_file, (model, windows) in list(self.models_to_windows.items()):
             if window in windows:
                 windows.remove(window)
@@ -123,17 +129,20 @@ class SimpleGTD(Gtk.Application, _SimpleGTDAppState):
                 model.close()
                 del self.models_to_windows[data_file]
         if not self.models_to_windows:
-            self.quit()
+            pass
         else:
             self.todo_txts = list(self.models_to_windows.keys())
             self.persist_app_state()
 
-    def quit(self):
+    def on_shutdown(self, *unused):
         if self.models_to_windows:
-            # First, we disconnect our own todo_window_removed handler,
+            # First, we disconnect our own on_todo_window_removed handler,
             # since while quitting we do not want that handler to handle
             # whittling down the window list.
-            self.disconnect_by_func(self.todo_window_removed)
+            try:
+                self.disconnect_by_func(self.on_todo_window_removed)
+            except TypeError:
+                pass
             # Now we persist everything.
             self.todo_txts = list(self.models_to_windows.keys())
             self.persist_app_state()
@@ -142,13 +151,12 @@ class SimpleGTD(Gtk.Application, _SimpleGTDAppState):
                     window.destroy()
             for model, windows in list(self.models_to_windows.values()):
                 model.close()
-        Gtk.main_quit()
+            self.models_to_windows.clear()
 
 
 def main():
     app = SimpleGTD()
-    GLib.idle_add(app.run)
-    Gtk.main()
+    app.run()
 
 
 if __name__ == "__main__":
