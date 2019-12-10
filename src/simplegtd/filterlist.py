@@ -56,7 +56,6 @@ class FilterList(Gtk.ListStore):
 
         # Add tokens that are not visible at the moment.
         for tok in new_tokens:
-            tok = tok.strip()
             if tok.startswith("@") or tok.startswith("+"):
                 self.tokens_contained_in_row[row].append(tok)
                 if not self.token_visible[tok]:

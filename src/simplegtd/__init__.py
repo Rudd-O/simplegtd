@@ -159,7 +159,6 @@ class SimpleGTD(Gtk.Application, _SimpleGTDAppState):
 
 parser = argparse.ArgumentParser(description="Simple GTD")
 parser.add_argument("-l", "--log-level", default=None, choices=["debug"])
-parser.add_argument("todo_txt_file", nargs="*")
 
 
 def main():
