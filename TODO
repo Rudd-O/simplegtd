@@ -19,6 +19,7 @@
 * automatic creation date addition
 * undo capability
 +robustness @next ensure that trying to load invalid non-utf-8 files actually displays an error instead of silently failing and leaving half-initialized stuff (requires error dialog box in libwhiz)
+It runs now, thanks. It's not very intuitive, though. The buttons do not have tooltips so it's hard to tell what they do. The "new" (?) button just spawns an identical window. The quit button is a bit redundant since the window has a close button like any other. The Insert key adds a new editable line, but it's not obvious what it's doing. I created a new file in my home directory, closed the program, opened it again and it only lists the new one, not the default todo.txt.
 x search filter box
 x exit app toolbar button and key combo
 x multi-window: allow new window to be created with key combo and toolbar button
