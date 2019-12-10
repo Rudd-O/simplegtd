@@ -23,46 +23,67 @@ class FilterList(Gtk.ListStore):
            4. markup to render instead of plain text string
         '''
         self.logger = logging.getLogger(self.__class__.__name__)
-        self.rows_that_contain_token = collections.defaultdict(list)
-        self.tokens_contained_in_row = collections.defaultdict(list)
-        self.token_iter_in_filter = {}
+        self.tokens_contained_in_row = []
+        self.token_visible = collections.defaultdict(bool)
         self.append(["All tasks", "", "", "All tasks"])
-        todotxt.connect("row-changed", self.todotxt_row_changed)
+        todotxt.connect("row-inserted", self.todotxt_row_inserted_or_changed)
+        todotxt.connect("row-changed", self.todotxt_row_inserted_or_changed)
         todotxt.connect("row-deleted", self.todotxt_row_deleted)
-        todotxt.connect("row-inserted", self.todotxt_row_inserted)
         for n, unused_row in enumerate(todotxt):
-            self.todotxt_row_inserted(todotxt, Gtk.TreePath.new_from_indices([n]), None)
+            self.todotxt_row_inserted_or_changed(todotxt, Gtk.TreePath.new_from_indices([n]), None)
 
-    def todotxt_row_inserted(self, todotxt, path, unused_it):
+    def todotxt_row_inserted_or_changed(self, todotxt, path, unused_it):
         row = path.get_indices()[0]
         text = todotxt[path][0]
-        tokens = text.split()
-        for tok in tokens:
+
+        # Fill up the list to capacity.
+        while len(self.tokens_contained_in_row) <= row:
+            self.tokens_contained_in_row.append([])
+        # Remember the old tokens before the change.
+        old_tokens = self.tokens_contained_in_row[row]
+        # Zero out the token store for this row.
+        self.tokens_contained_in_row[row] = []
+
+        # The task is empty?  Do nothing then.
+        if text is None:
+            # Deref old tokens, return.
+            self._deref_old_tokens(old_tokens, [])
+            return
+        else:
+            # Deref old tokens ignoring new ones.
+            new_tokens = [t.strip() for t in text.split()]
+            self._deref_old_tokens(old_tokens, new_tokens)
+
+        # Add tokens that are not visible at the moment.
+        for tok in new_tokens:
             tok = tok.strip()
             if tok.startswith("@") or tok.startswith("+"):
-                if row not in self.rows_that_contain_token[tok]:
-                    self.rows_that_contain_token[tok].append(row)
-                if tok not in self.tokens_contained_in_row[row]:
-                    self.tokens_contained_in_row[row].append(tok)
-                self.logger.debug("New ref count for %s: %s", tok, len(self.rows_that_contain_token[tok]))
-                if tok not in self.token_iter_in_filter:
+                self.tokens_contained_in_row[row].append(tok)
+                if not self.token_visible[tok]:
                     sortable = ("1" if tok.startswith("@") else "2") + tok
-                    self.token_iter_in_filter[tok] = self.append([tok, sortable, tok, markup_for(tok)])
+                    self.append([tok, sortable, tok, markup_for(tok)])
+                    self.token_visible[tok] = True
 
     def todotxt_row_deleted(self, unused_todotxt, path):
         row = path.get_indices()[0]
-        for tok in self.tokens_contained_in_row[row]:
-            self.rows_that_contain_token[tok].remove(row)
-            self.logger.debug("New ref count for %s: %s", tok, len(self.rows_that_contain_token[tok]))
-            if not self.rows_that_contain_token[tok]:
-                it = self.token_iter_in_filter[tok]
-                self.remove(it)
-                del self.token_iter_in_filter[tok]
-        del self.tokens_contained_in_row[row]
+        old_tokens = self.tokens_contained_in_row[row]
+        # Remove the tokens on the way out.
+        self.tokens_contained_in_row.pop(row)
+        # Deref old tokens.
+        self._deref_old_tokens(old_tokens, [])
 
-    def todotxt_row_changed(self, todotxt, path, it):
-        self.todotxt_row_deleted(todotxt, path)
-        self.todotxt_row_inserted(todotxt, path, it)
+    def _deref_old_tokens(self, old_tokens, new_tokens):
+        # Compute tokens of remaining tasks, then remove filter
+        # elements that do not correspond to tokens of remaining tasks.
+        remaining = set(tok for rowtoks in self.tokens_contained_in_row for tok in rowtoks)
+        remaining = remaining | set(new_tokens if new_tokens else [])
+        for tok in old_tokens:
+            if self.token_visible[tok] and tok not in remaining:
+                self.token_visible[tok] = False
+                for r in self:
+                    if r[0] == tok:
+                        self.remove(r.iter)
+                        break
 
     def get_sorted(self):
         '''Wrap the FilterList into a sortable list.'''
