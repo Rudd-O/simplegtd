@@ -90,15 +90,16 @@ class TaskView(Gtk.TreeView):
             if flt == "":
                 continue
             elif flt.startswith("+"):
-                pluses.append(flt)
+                pluses.append(flt.lower())
             elif flt.startswith("@"):
-                ats.append(flt)
+                ats.append(flt.lower())
             else:
-                substrings.append(flt)
-        has_any_pluses = any(i in task for i in pluses) if pluses else True
-        has_any_ats = any(i in task for i in ats) if ats else True
-        has_all_substrings = all(i in task for i in substrings) if substrings else True
-        return has_any_pluses and has_any_ats and has_all_substrings
+                substrings.append(flt.lower())
+        has_any_pluses = any(i in task.lower() for i in pluses) if pluses else True
+        has_any_ats = any(i in task.lower() for i in ats) if ats else True
+        has_all_substrings = all(i in task.lower() for i in substrings) if substrings else True
+        result = has_any_pluses and has_any_ats and has_all_substrings
+        return result
 
     def set_filters(self, filters):
         if self.filters is None:
