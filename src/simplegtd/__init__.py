@@ -1,9 +1,11 @@
 #!/usr/bin/python3
 
-__version__ = "0.0.12"
+__version__ = "0.0.13"
 
 
+import argparse
 import collections
+import logging
 import os
 
 import gi
@@ -135,6 +137,7 @@ class SimpleGTD(Gtk.Application, _SimpleGTDAppState):
             self.persist_app_state()
 
     def on_shutdown(self, *unused):
+        logging.debug("We have models-to-windows: %s", self.models_to_windows.keys())
         if self.models_to_windows:
             # First, we disconnect our own on_todo_window_removed handler,
             # since while quitting we do not want that handler to handle
@@ -154,7 +157,15 @@ class SimpleGTD(Gtk.Application, _SimpleGTDAppState):
             self.models_to_windows.clear()
 
 
+parser = argparse.ArgumentParser(description="Simple GTD")
+parser.add_argument("-l", "--log-level", default=None, choices=["debug"])
+parser.add_argument("todo_txt_file", nargs="*")
+
+
 def main():
+    args = parser.parse_args()
+    if args.log_level == "debug":
+        logging.basicConfig(level=getattr(logging, args.log_level.upper()))
     app = SimpleGTD()
     app.run()
 
