@@ -1,3 +1,6 @@
+@tickler +ui filter side pane needs to gain custom filters, and @contexts +topics CustomFilters should gain their own subpanes
+@tickler +ui investigate the HdyLeaflet stuff for resizable app
+@tickler +feature GtkApplication unique instance w/ autoremembered multiple views with different settings, still need to decide how we will handle restoring when the app loads / when a todo is opened (need to describe the desired behavior in text in a design doc)
 @tickler +ui Stronger data model for tasks (required for better display of tasks)
 @tickler +ui Improve display of task count (requires stronger data model for tasks)
 @tickler +ui how to handle the menu https://wiki.gnome.org/HowDoI/GMenu
