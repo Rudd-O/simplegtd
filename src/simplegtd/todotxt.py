@@ -22,12 +22,14 @@ from simplegtd.task import markup_for
 # text.
 class TodoTxt(Gtk.ListStore, simplegtd.models.liststoresyncer.ListStoreSyncer):
 
+    filename = None
     blobstore = None
     linestore = None
     taskstore = None
 
-    def __init__(self):
+    def __init__(self, filename):
         Gtk.ListStore.__init__(self, object, str)
+        self.filename = filename
         self.logger = logging.getLogger(self.__class__.__name__)
         self.blobstore = simplegtd.models.blobstore.FileBlobStore()
         self.linestore = simplegtd.models.linestore.LineStore(self.blobstore)
@@ -38,10 +40,10 @@ class TodoTxt(Gtk.ListStore, simplegtd.models.liststoresyncer.ListStoreSyncer):
         )
 
     def name(self):
-        return self.blobstore.name
+        return self.filename
 
-    def open(self, filename):
-        return self.blobstore.open(filename)
+    def open(self):
+        return self.blobstore.open(self.filename)
 
     def close(self):
         simplegtd.models.liststoresyncer.ListStoreSyncer.close(self)

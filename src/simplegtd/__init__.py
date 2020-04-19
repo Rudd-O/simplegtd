@@ -103,7 +103,7 @@ class SimpleGTD(Gtk.Application, _SimpleGTDAppState):
             if data_file in self.models_to_windows:
                 model = self.models_to_windows[data_file][0]
             else:
-                model = simplegtd.todotxt.TodoTxt()
+                model = simplegtd.todotxt.TodoTxt(data_file)
             window = simplegtd.mainwindow.SimpleGTDMainWindow(
                 model, os.path.join(
                     self.cache_home,
@@ -129,7 +129,7 @@ class SimpleGTD(Gtk.Application, _SimpleGTDAppState):
             # FIXME: perhaps show window *after* successful first load, or error message
             # if unsuccessful load.  If unsuccessful load, perhaps the window must be
             # destroyed and cleaned up completely.
-            model.open(data_file)
+            model.open()
         except BaseException:
             Gtk.main_quit()
             raise
