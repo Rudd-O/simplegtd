@@ -34,7 +34,7 @@ class FilterList(Gtk.ListStore):
 
     def todotxt_row_inserted_or_changed(self, todotxt, path, unused_it):
         row = path.get_indices()[0]
-        text = todotxt[path][0]
+        text = todotxt[path][0].text
 
         # Fill up the list to capacity.
         while len(self.tokens_contained_in_row) <= row:

@@ -80,7 +80,7 @@ class TaskView(Gtk.TreeView):
         Gtk.TreeView.set_model(self, model.filter_new())
 
     def filter_func(self, model, it, unused_ptr):
-        task = model.get_value(it, 0)
+        task = model.get_value(it, 0).text
         if self.filter_displays_empty_tasks and task == "":
             return True
         pluses = []
