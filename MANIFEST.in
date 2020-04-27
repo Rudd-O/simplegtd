@@ -1,7 +1,6 @@
 include README.md
 include TODO
 include LICENSE.txt
-include doc/*
 include applications/*.desktop
 include icons/*.svg
 include data/*
