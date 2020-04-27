@@ -108,6 +108,8 @@ class SimpleGTDMainWindow(Gtk.ApplicationWindow, simplegtd.libwhiz.rememberingwi
         self.search_filters = []
 
         Gtk.ApplicationWindow.__init__(self)
+        self.set_default_icon_name("simplegtd")
+
         self.set_default_size(800, 600)
         simplegtd.libwhiz.rememberingwindow.RememberingWindow.__init__(self, window_state_file)
 
