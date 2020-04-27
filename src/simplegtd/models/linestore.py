@@ -23,7 +23,7 @@ class LineStore(Gtk.ListStore):
 
     __gsignals__ = {
         'unserialized': (GObject.SIGNAL_RUN_FIRST, None, ()),
-        'serealized': (GObject.SIGNAL_RUN_FIRST, None, ()),
+        'serialized': (GObject.SIGNAL_RUN_FIRST, None, ()),
     }
 
     def __init__(self):
@@ -106,5 +106,5 @@ class LineStore(Gtk.ListStore):
             if lines:
                 lines[-1] = lines[-1][:-1]
         text = "".join(lines)
-        return text
         self.emit('serialized')
+        return text

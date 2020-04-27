@@ -39,7 +39,8 @@ def ctx(kallable):
     try:
         yield obj
     finally:
-        obj.close()
+        if hasattr(obj, "close"):
+            obj.close()
 
 
 def transform_file_text(fobject, before_list, after_list, flush):
@@ -85,7 +86,8 @@ class LineStoreTest(unittest.TestCase):
 
     def test_loads_fine_from_string_blobstore(self):
         with ctx(lambda: bs.StringBlobStore()) as b:
-            with ctx(lambda: sm.LineStore(b)) as t:
+            with ctx(lambda: sm.LineStore()) as t:
+                b.connect("done-reading", t.unserialize),
                 b.open(fixture_text("before.txt"))
                 gloop()
                 loaded = dump(t)
@@ -94,7 +96,8 @@ class LineStoreTest(unittest.TestCase):
 
     def test_loads_fine(self):
         with ctx(lambda: bs.FileBlobStore()) as b:
-            with ctx(lambda: sm.LineStore(b)) as t:
+            with ctx(lambda: sm.LineStore()) as t:
+                b.connect("done-reading", t.unserialize),
                 collect, result = gloop()
                 b.connect("done-reading", collect)
                 b.open(fixture_path("before.txt"))
@@ -104,7 +107,8 @@ class LineStoreTest(unittest.TestCase):
     def test_loads_written_text_from_another_process(self):
         with tempfile.NamedTemporaryFile(mode="w+") as f:
             with ctx(lambda: bs.FileBlobStore()) as b:
-                with ctx(lambda: sm.LineStore(b)) as t:
+                with ctx(lambda: sm.LineStore()) as t:
+                    b.connect("done-reading", t.unserialize),
                     collect, result = gloop()
                     self.assertListEqual(dump(t), [])
                     b.connect("done-reading", collect)
@@ -126,7 +130,8 @@ class LineStoreTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdir:
             with tempfile.NamedTemporaryFile(mode="w+", dir=tmpdir) as f:
                 with ctx(lambda: bs.FileBlobStore()) as b:
-                    with ctx(lambda: sm.LineStore(b)) as t:
+                    with ctx(lambda: sm.LineStore()) as t:
+                        b.connect("done-reading", t.unserialize),
                         th = file_writer(f, flush)
                         c = GLib.MainContext.default()
                         b.open(f.name)

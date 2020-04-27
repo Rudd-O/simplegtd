@@ -14,7 +14,8 @@ class TaskStoreTest(unittest.TestCase):
 
     def setUp(self):
         self.b = bs.StringBlobStore()
-        self.l = ls.LineStore(self.b)
+        self.l = ls.LineStore()
+        self.b.connect("done-reading", self.l.unserialize)
         self.t = ts.TaskStore(self.l)
         self.c = GLib.MainContext.default()
 
@@ -26,7 +27,7 @@ class TaskStoreTest(unittest.TestCase):
         del self.c
         self.t.close()
         del self.t
-        self.l.close()
+        self.b.disconnect_by_func(self.l.unserialize)
         del self.l
         self.b.close()
         del self.b
@@ -105,7 +106,7 @@ class TaskStoreTest(unittest.TestCase):
         self.t[0][0].connect("changed", self.t.on_task_changed)
         self.run_loop()
         self.assertEqual(self.t[0][0].threshold_date, None)
-        self.l._save()
+        self.b.put(self.l.serialize())
         self.run_loop()
         self.assertEqual(self.b.memory, changed_task)
         self.t[0][0] = self.t[0][0]
@@ -118,7 +119,7 @@ class TaskStoreTest(unittest.TestCase):
         self.t[0][0].set_text(changed_task)
         self.run_loop()
         self.assertEqual(self.t[0][0].threshold_date, None)
-        self.l._save()
+        self.b.put(self.l.serialize())
         self.run_loop()
         self.assertEqual(self.b.memory, changed_task)
 
