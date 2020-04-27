@@ -5,7 +5,7 @@ import logging
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk
+from gi.repository import GObject, Gtk
 
 
 # FIXME it's probably prudent to create a Mapper between the LineStore
@@ -21,18 +21,16 @@ class LineStore(Gtk.ListStore):
     last_line_cr = False
     __watches = None
 
-    def __init__(self, blobstore):
+    __gsignals__ = {
+        'unserialized': (GObject.SIGNAL_RUN_FIRST, None, ()),
+        'serealized': (GObject.SIGNAL_RUN_FIRST, None, ()),
+    }
+
+    def __init__(self):
         Gtk.ListStore.__init__(self, str)
         self.logger = logging.getLogger(self.__class__.__name__)
-        self.blobstore = blobstore
-        self.__watches = [
-            self.blobstore.connect("done-reading", self.__sync_from_blobstore),
-        ]
 
-    def close(self):
-        [self.blobstore.disconnect(w) for w in self.__watches]
-
-    def __sync_from_blobstore(self, unused_bs, text, exc):
+    def unserialize(self, unused_bs, text, exc):
         self.logger.debug("Load begun.  Lines: %s.", len(text.splitlines()))
         if exc is not None:
             # Oops.  The blobstore had a problem.
@@ -100,14 +98,13 @@ class LineStore(Gtk.ListStore):
             else:
                 assert 0, "not reached: %s" % op
         self.logger.debug("Load finished.  %s additions, %s removals, %s changes.  Lines: %s.", added, removed, changed, len(self))
+        self.emit('unserialized')
 
-    def _save(self):
-        '''Saves the todo tasks list.'''
+    def serialize(self):
         lines = [row[0] + "\n" for row in self]
         if not self.last_line_cr:
             if lines:
                 lines[-1] = lines[-1][:-1]
         text = "".join(lines)
-        # This object does not know how to handle errors in `done-writing`.
-        # That responsibility befalls upon the owner of this object.
-        self.blobstore.put(text)
+        return text
+        self.emit('serialized')

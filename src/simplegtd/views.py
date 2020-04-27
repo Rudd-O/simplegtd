@@ -16,6 +16,7 @@ class TaskView(Gtk.TreeView):
     def __init__(self):
         Gtk.TreeView.__init__(self)
         self.set_headers_visible(False)
+        self.set_property('expand', True)
         self.get_selection().set_mode(Gtk.SelectionMode.MULTIPLE)
         self.cell = renderer = Gtk.CellRendererText()
         renderer.set_property('editable', True)
@@ -140,7 +141,9 @@ class FilterView(Gtk.TreeView):
         self.get_selection().set_mode(Gtk.SelectionMode.MULTIPLE)
         renderer = Gtk.CellRendererText()
         renderer.ellipsize = Pango.EllipsizeMode.MIDDLE
-        self.append_column(Gtk.TreeViewColumn("Filters", renderer, markup=3))
+        c = Gtk.TreeViewColumn("Filters", renderer, markup=3)
+        c.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
+        self.append_column(c)
         simplegtd.libwhiz.css.add(self.css)
         self.get_style_context().add_class("filter_view")
 

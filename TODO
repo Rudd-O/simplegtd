@@ -1,3 +1,4 @@
+@tickler +ui ensure that libhandy and libgtk are available, show error message otherwise.
 @tickler +ui filter side pane needs to gain custom filters, and @contexts +topics CustomFilters should gain their own subpanes
 @tickler +ui investigate the HdyLeaflet stuff for resizable app
 @tickler +feature GtkApplication unique instance w/ autoremembered multiple views with different settings, still need to decide how we will handle restoring when the app loads / when a todo is opened (need to describe the desired behavior in text in a design doc)

@@ -276,7 +276,7 @@ class FileBlobStore(AbstractBlobStore):
             try:
                 with open(name, "w+") as f:
                     if new_data == f.read():
-                        pass
+                        self.logger.debug("Unchanged.  No writes.")
                     else:
                         f.seek(0)
                         f.truncate()

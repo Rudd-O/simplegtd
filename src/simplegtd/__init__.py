@@ -104,6 +104,17 @@ class SimpleGTD(Gtk.Application, _SimpleGTDAppState):
                 model = self.models_to_windows[data_file][0]
             else:
                 model = simplegtd.todotxt.TodoTxt(data_file)
+                # FIXME: connect blobstore done-writing and done-reading to handlers
+                # that will handle any exception encountered during the operation.
+                # FIXME: disable all data entry and editing between reading/done-reading
+                # and writing/done-writing.  All fields and actions must be greyed out
+                # while that's happening.  If an edit is in progress, still have to decide
+                # what we will do in order to handle that situation.  Or decide later how we
+                # will handle that circumstance.
+                # FIXME: perhaps show window *after* successful first load, or error message
+                # if unsuccessful load.  If unsuccessful load, perhaps the window must be
+                # destroyed and cleaned up completely.
+                model.open()
             window = simplegtd.mainwindow.SimpleGTDMainWindow(
                 model, os.path.join(
                     self.cache_home,
@@ -119,17 +130,6 @@ class SimpleGTD(Gtk.Application, _SimpleGTDAppState):
             window.connect("exit-activated", self.delegate_exit_activated)
             window.connect("destroy", self.remove_window)
             window.show_all()
-            # FIXME: connect blobstore done-writing and done-reading to handlers
-            # that will handle any exception encountered during the operation.
-            # FIXME: disable all data entry and editing between reading/done-reading
-            # and writing/done-writing.  All fields and actions must be greyed out
-            # while that's happening.  If an edit is in progress, still have to decide
-            # what we will do in order to handle that situation.  Or decide later how we
-            # will handle that circumstance.
-            # FIXME: perhaps show window *after* successful first load, or error message
-            # if unsuccessful load.  If unsuccessful load, perhaps the window must be
-            # destroyed and cleaned up completely.
-            model.open()
         except BaseException:
             Gtk.main_quit()
             raise

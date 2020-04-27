@@ -38,6 +38,14 @@ The application will remember multiple windows with different files open as well
 Installation
 ------------
 
+Ensure your system has the necessary requirements:
+
+* Python 3
+* GTK+ 3
+* the GTK+ Python 3 bindings (pygobject3)
+* the PyXDG Python 3 module (pyxdg)
+* libhandy 0.x
+
 * Install from PyPI: `pip3 install --user simplegtd`
 * Install as RPM: download / unpack the source and run `python3 setup.py bdist_rpm` in the source-unpacked folder, then install the RPM from the `dist/` folder.
 * Install on your system: download / unpack the source and run `python3 setup.py install` in the source-unpacked folder.

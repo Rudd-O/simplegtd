@@ -5,7 +5,7 @@ import logging
 import gi
 gi.require_version('Gdk', '3.0')
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk
+from gi.repository import GObject, Gtk
 
 import simplegtd.models.blobstore
 import simplegtd.models.linestore
@@ -27,17 +27,34 @@ class TodoTxt(Gtk.ListStore, simplegtd.models.liststoresyncer.ListStoreSyncer):
     linestore = None
     taskstore = None
 
+    __gsignals__ = {
+        'ready': (GObject.SIGNAL_RUN_FIRST, None, ()),
+    }
+
     def __init__(self, filename):
         Gtk.ListStore.__init__(self, object, str)
         self.filename = filename
         self.logger = logging.getLogger(self.__class__.__name__)
         self.blobstore = simplegtd.models.blobstore.FileBlobStore()
-        self.linestore = simplegtd.models.linestore.LineStore(self.blobstore)
+        self.linestore = simplegtd.models.linestore.LineStore()
+        self.__watches = [
+            self.blobstore.connect("done-reading", self.linestore.unserialize),
+        ]
+        self.__ready_watches = [
+            self.linestore.connect("unserialized", self.__on_first_unserialize),
+        ]
         self.taskstore = simplegtd.models.taskstore.TaskStore(self.linestore)
         simplegtd.models.liststoresyncer.ListStoreSyncer.__init__(
             self, self, self.taskstore,
             lambda r: [r[0]], lambda r: [r[0], markup_for(r[0].text)],
         )
+
+    def __on_first_unserialize(self, *unused):
+        # Only fires the first time that the linestore is unserialized.
+        self.linestore.disconnect(self.__ready_watches[-1])
+        self.__ready_watches = self.__ready_watches[:-1]
+        self.logger.debug("Successful unserialize of the linestore.  Emitting ready().")
+        self.emit('ready')
 
     def name(self):
         return self.filename
@@ -48,7 +65,8 @@ class TodoTxt(Gtk.ListStore, simplegtd.models.liststoresyncer.ListStoreSyncer):
     def close(self):
         simplegtd.models.liststoresyncer.ListStoreSyncer.close(self)
         self.taskstore.close()
-        self.linestore.close()
+        [self.linestore.disconnect(w) for w in self.__ready_watches]
+        [self.blobstore.disconnect(w) for w in self.__watches]
         self.blobstore.close()
 
     def remove_at(self, iter_):
@@ -85,4 +103,7 @@ class TodoTxt(Gtk.ListStore, simplegtd.models.liststoresyncer.ListStoreSyncer):
 
     def __save(self):
         '''Saves the todo tasks list.'''
-        self.linestore._save()
+        text = self.linestore.serialize()
+        # FIXME errors in puts must be handled somehow.
+        # Right now they are not handled.
+        self.blobstore.put(text)
