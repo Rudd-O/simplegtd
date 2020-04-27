@@ -40,13 +40,13 @@ icons = [
     "simplegtd.svg",
 ]
 
-# https://github.com/Rudd-O/ledgerhelpers/issues/3
 # Don't write to /usr/share/applications on OS X to work around the
 # 'System Integrity Protection'.
+g = lambda p: os.path.join(os.path.dirname(__file__), p)
 data_files = [
-	("/usr/share/applications", ["applications/%s.desktop" % p for p in programs]),
-	("/usr/share/icons", ["icons/%s" % p for p in icons]),
-	("/usr/share/simplegtd", ["data/%s" % p for p in ui_files]),
+	("/usr/share/applications", [g("applications/%s.desktop") % p for p in programs]),
+	("/usr/share/icons", [g("icons/%s") % p for p in icons]),
+	("/usr/share/simplegtd", [g("data/%s") % p for p in ui_files]),
 ] if platform.system() != 'Darwin' else []
 
 setup(
