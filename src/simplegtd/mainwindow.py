@@ -166,24 +166,41 @@ class SimpleGTDMainWindow(Gtk.ApplicationWindow, simplegtd.libwhiz.rememberingwi
         filter_view_scroller.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         filter_view_scroller.add(self.filter_view)
 
-        tasks_pane = Gtk.VBox()
-        tasks_pane.pack_start(self.tasks_header_bar, False, True, 0)
-        tasks_pane.pack_end(task_view_scroller, True, True, 0)
-
         filters = simplegtd.filterlist.FilterList(todotxt)
         self.task_view.set_model(todotxt)
         self.filter_view.set_model(filters)
 
-        filter_pane = Gtk.VBox()
-        filter_pane.pack_start(self.filter_header_bar, False, True, 0)
-        filter_pane.pack_end(filter_view_scroller, True, True, 0)
+        # Group the header bars.
+        hg = Handy.HeaderGroup()
+        hg.add_header_bar(self.filter_header_bar)
+        hg.add_header_bar(self.tasks_header_bar)
 
+        # Group the filter header bar and filter scroller list.
+        sg = Gtk.SizeGroup()
+        sg.set_mode(Gtk.SizeGroupMode.HORIZONTAL)
+        sg.add_widget(self.filter_header_bar)
+        sg.add_widget(filter_view_scroller)
+
+        # Make the title bar.
+        titlebox = Gtk.Box()
+        titlebox.pack_start(self.filter_header_bar, False, True, 0)
+        self.filter_header_bar.set_show_close_button(True)
+        sep = Gtk.VSeparator()
+        sep.get_style_context().add_class("sidebar")
+        titlebox.add(sep)
+        titlebox.pack_end(self.tasks_header_bar, True, True, 0)
+        self.tasks_header_bar.set_show_close_button(True)
+        ht = Handy.TitleBar()
+        ht.add(titlebox)
+        self.set_titlebar(ht)
+
+        # Make the pane components and add the pane to the window.
         paned = Handy.Leaflet()
-        paned.add(filter_pane)
-        paned.add(tasks_pane)
-        paned.set_visible_child(tasks_pane)
-
+        paned.add(filter_view_scroller)
+        paned.add(task_view_scroller)
+        paned.set_visible_child(task_view_scroller)
         self.add(paned)
+
         self.task_view.grab_focus()
 
     def recompute_subtitle(self, model, *unused_args):
