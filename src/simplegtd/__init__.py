@@ -9,13 +9,14 @@ import logging
 import os
 
 import gi
-gi.require_version('Gdk', '3.0')
-gi.require_version('Gtk', '3.0')
 from gi.repository import GObject, GLib, Gdk, Gtk, Gio
-
-import simplegtd.todotxt
-import simplegtd.mainwindow
 import simplegtd.libwhiz.path
+import simplegtd.mainwindow
+import simplegtd.todotxt
+
+
+gi.require_version("Gdk", "3.0")
+gi.require_version("Gtk", "3.0")
 
 
 class _SimpleGTDAppState(object):
@@ -45,7 +46,6 @@ class _SimpleGTDAppState(object):
 
 
 class SimpleGTD(Gtk.Application, _SimpleGTDAppState):
-
     def __init__(self):
         Gtk.Application.__init__(self)
         self.config_home = simplegtd.libwhiz.path.config_home("simplegtd")
@@ -77,10 +77,13 @@ class SimpleGTD(Gtk.Application, _SimpleGTDAppState):
             parent=requestor,
             action=Gtk.FileChooserAction.SAVE,
             buttons=(
-                Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
-                Gtk.STOCK_OPEN, Gtk.ResponseType.OK,
-                "Use default", Gtk.ResponseType.NONE,
-            )
+                Gtk.STOCK_CANCEL,
+                Gtk.ResponseType.CANCEL,
+                Gtk.STOCK_OPEN,
+                Gtk.ResponseType.OK,
+                "Use default",
+                Gtk.ResponseType.NONE,
+            ),
         )
         response = choosefile_dialog.run()
         choosefile_dialog.hide()
@@ -116,10 +119,11 @@ class SimpleGTD(Gtk.Application, _SimpleGTDAppState):
                 # destroyed and cleaned up completely.
                 model.open()
             window = simplegtd.mainwindow.SimpleGTDMainWindow(
-                model, os.path.join(
+                model,
+                os.path.join(
                     self.cache_home,
-                    "window-state-" + simplegtd.libwhiz.path.hash_path(data_file)
-                )
+                    "window-state-" + simplegtd.libwhiz.path.hash_path(data_file),
+                ),
             )
             self.add_window(window)
             if data_file not in self.models_to_windows:
