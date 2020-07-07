@@ -1,3 +1,4 @@
+@tickler +ui outright copy the newest release of GTG's UI because it's great https://www.youtube.com/watch?v=cR7ARrJ9q5s https://fortintam.com/blog/2020-06-gtg-status-update/
 @tickler +ui ensure that libhandy and libgtk are available, show error message otherwise.
 @tickler +ui filter side pane needs to gain custom filters, and @contexts +topics CustomFilters should gain their own subpanes
 @tickler +ui investigate the HdyLeaflet stuff for resizable app
