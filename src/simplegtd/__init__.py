@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-__version__ = "0.0.24"
+__version__ = "0.0.25"
 
 
 import argparse
@@ -9,14 +9,15 @@ import logging
 import os
 
 import gi
+gi.require_version("Gdk", "3.0")
+gi.require_version("Gtk", "3.0")
+
 from gi.repository import GObject, GLib, Gdk, Gtk, Gio
 import simplegtd.libwhiz.path
 import simplegtd.mainwindow
 import simplegtd.todotxt
 
 
-gi.require_version("Gdk", "3.0")
-gi.require_version("Gtk", "3.0")
 
 
 class _SimpleGTDAppState(object):

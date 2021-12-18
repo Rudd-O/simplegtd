@@ -3,13 +3,27 @@ import os
 import gi
 gi.require_version('Gdk', '3.0')
 gi.require_version('Gtk', '3.0')
-gi.require_version('Handy', '0.0')
+try:
+    gi.require_version('Handy', '1')
+    handy_version = 1
+except ValueError:
+    handy_version = 0
+    gi.require_version('Handy', '0.0')
+
 from gi.repository import GObject, GLib, Gdk, Gtk, Handy
 
 import simplegtd.libwhiz.rememberingwindow
 import simplegtd.filterlist
 import simplegtd.libwhiz.path
 import simplegtd.views
+
+
+if handy_version == 1:
+    FilterHeaderBarClass = Handy.HeaderBar
+    TasksHeaderBarClass = Handy.HeaderBar
+else:
+    FilterHeaderBarClass = Gtk.HeaderBar
+    TasksHeaderBarClass = Gtk.HeaderBar
 
 
 def make_title(todotxt):
@@ -26,7 +40,7 @@ def make_title(todotxt):
     return 'Simple GTD (in memory)'
 
 
-class FilterHeaderBar(Gtk.HeaderBar):
+class FilterHeaderBar(FilterHeaderBarClass):
 
     saved_filter_text = ""
     text_filter_mode_active = False
@@ -101,7 +115,7 @@ class SimpleGTDMainWindow(Gtk.ApplicationWindow, simplegtd.libwhiz.rememberingwi
     }
 
     filter_header_bar = FilterHeaderBar
-    tasks_header_bar = Gtk.HeaderBar
+    tasks_header_bar = TasksHeaderBarClass
 
     def __init__(self, todotxt, window_state_file):
         self.selection_filters = []
@@ -119,14 +133,14 @@ class SimpleGTDMainWindow(Gtk.ApplicationWindow, simplegtd.libwhiz.rememberingwi
         self.add_accelerator("close-window-activated", accel_group, ord('w'), Gdk.ModifierType.CONTROL_MASK, 0)
         self.connect("close-window-activated", lambda _: self.destroy())
 
-        self.filter_header_bar = FilterHeaderBar()
+        self.filter_header_bar = self.filter_header_bar()
         self.filter_header_bar.connect("search-changed", lambda _, text: self.filter_text_changed(text))
         self.filter_header_bar.connect("search-deactivated", lambda unused_entry: self.task_view.grab_focus())
         self.filter_header_bar.connect("activate", lambda unused_entry: self.task_view.grab_focus())
         self.add_accelerator("text-filter-toggled", accel_group, ord('f'), Gdk.ModifierType.CONTROL_MASK, 0)
         self.connect('text-filter-toggled', lambda *_: self.filter_header_bar.toggle_text_filter_mode())
 
-        self.tasks_header_bar = Gtk.HeaderBar()
+        self.tasks_header_bar = self.tasks_header_bar()
         self.tasks_header_bar.set_show_close_button(True)
 
         [x(make_title(todotxt)) for x in (self.tasks_header_bar.set_title, self.set_title)]
