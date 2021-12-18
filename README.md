@@ -44,7 +44,7 @@ Ensure your system has the necessary requirements:
 * GTK+ 3
 * the GTK+ Python 3 bindings (pygobject3)
 * the PyXDG Python 3 module (pyxdg)
-* libhandy 0.x
+* libhandy 0.x or 1.x
 
 * Install from PyPI: `pip3 install --user simplegtd`
 * Install as RPM: download / unpack the source and run `python3 setup.py bdist_rpm` in the source-unpacked folder, then install the RPM from the `dist/` folder.
