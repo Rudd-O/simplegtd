@@ -1,12 +1,10 @@
-Simple GTD: manage your TODO.txt
-================================
+# Simple GTD: manage your TODO.txt
 
 Simple GTD lets you manage your to-do list using the Getting Things Done system.
 
 Skip below for usage and installation instructions.
 
-Features
---------
+## Features
 
 **Sync-ready and sync-friendly**
 
@@ -26,8 +24,7 @@ The program is consciously developed to reduce the overhead of common operations
 
 Unlike most to-do apps, you can manage multiple lists with Simple GTD.  Exiting the app and reopening the app again will open all lists you had open before.  Even window sizes are remembered per list, so short and long lists won't be a chore to manage.
 
-Usage
------
+## Usage
 
 The application is fairly simple to use.  When you start it, an empty window will pop up.  Click on the *Help* icon in the header bar to see the shortcut keys you can use to manage your tasks.  The standard keyboard shortcuts will work well.
 
@@ -35,8 +32,9 @@ By default, the application will store your `todo.txt` file in its hidden data d
 
 The application will remember multiple windows with different files open as well.  If you quit the application (using Quit in the toolbar or the keyboard combination) instead of closing windows one-by-one, next time you run it, Simple GTD will reopen the files you'd had open first.
 
-Installation
-------------
+## Installation
+
+### Requirements
 
 Ensure your system has the necessary requirements:
 
@@ -44,11 +42,25 @@ Ensure your system has the necessary requirements:
 * GTK+ 3
 * the GTK+ Python 3 bindings (pygobject3)
 * the PyXDG Python 3 module (pyxdg)
-* libhandy 0.x or 1.x
+* libhandy 1.x
 
-* Install from PyPI: `pip3 install --user simplegtd`
-* Install as RPM: download / unpack the source and run `python3 setup.py bdist_rpm` in the source-unpacked folder, then install the RPM from the `dist/` folder.
-* Install on your system: download / unpack the source and run `python3 setup.py install` in the source-unpacked folder.
-* Run directly from the source: download / unpack the source and run `bin/simplegtd` from the source-unpacked folder.
+You can now install it or run it from source.
 
-All methods work equally well, but only the RPM installation method is guaranteed to install a desktop menu icon for the application.
+### Install
+
+#### From PyPI
+
+1. `pip3 install --user simplegtd`
+2. Ensure the `simplegtd` entry point script is in your `PATH`.
+3. Copy the files in your Python's `site-packages/simplegtd/data/applications` to your `~/.local/share/applications`.
+4. Copy the files in your Python's `site-packages/simplegtd/data/icons` to your `~/.local/share/icons`.
+
+#### From RPM
+
+Packages for Fedora named `simplegtd` are available at the appropriate subdirectory within https://repo.rudd-o.com/ .
+
+### Run directly from source
+
+```
+PYTHONPATH=src python3 src/simplegtd/__init__.py
+```
