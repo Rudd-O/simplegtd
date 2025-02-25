@@ -6,4 +6,4 @@ Terminal=false
 TryExec=simplegtd
 Type=Application
 StartupNotify=true
-Categories=Office;Productivity;
+Categories=Office;

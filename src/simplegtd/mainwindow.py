@@ -3,12 +3,7 @@ import os
 import gi
 gi.require_version('Gdk', '3.0')
 gi.require_version('Gtk', '3.0')
-try:
-    gi.require_version('Handy', '1')
-    handy_version = 1
-except ValueError:
-    handy_version = 0
-    gi.require_version('Handy', '0.0')
+gi.require_version('Handy', '1')
 
 from gi.repository import GObject, GLib, Gdk, Gtk, Handy
 
@@ -16,14 +11,6 @@ import simplegtd.libwhiz.rememberingwindow
 import simplegtd.filterlist
 import simplegtd.libwhiz.path
 import simplegtd.views
-
-
-if handy_version == 1:
-    FilterHeaderBarClass = Handy.HeaderBar
-    TasksHeaderBarClass = Handy.HeaderBar
-else:
-    FilterHeaderBarClass = Gtk.HeaderBar
-    TasksHeaderBarClass = Gtk.HeaderBar
 
 
 def make_title(todotxt):
@@ -40,7 +27,7 @@ def make_title(todotxt):
     return 'Simple GTD (in memory)'
 
 
-class FilterHeaderBar(FilterHeaderBarClass):
+class FilterHeaderBar(Handy.HeaderBar):
 
     saved_filter_text = ""
     text_filter_mode_active = False
@@ -115,7 +102,7 @@ class SimpleGTDMainWindow(Gtk.ApplicationWindow, simplegtd.libwhiz.rememberingwi
     }
 
     filter_header_bar = FilterHeaderBar
-    tasks_header_bar = TasksHeaderBarClass
+    tasks_header_bar = Handy.HeaderBar
 
     def __init__(self, todotxt, window_state_file):
         self.selection_filters = []
@@ -247,7 +234,7 @@ class SimpleGTDMainWindow(Gtk.ApplicationWindow, simplegtd.libwhiz.rememberingwi
             simplegtd.libwhiz.path.find_data_file(
                 "shortcuts-window.ui",
                 "simplegtd",
-                before=j(d(d(d(__file__))), "data")
+                before=j(d(__file__), "data", "ui")
             )
         )
         shortcuts_window = builder.get_object("shortcuts-simplegtd")

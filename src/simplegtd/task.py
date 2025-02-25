@@ -6,7 +6,7 @@ from gi.repository import GLib
 # FIXME in lieu of using a CellRenderer for a task object,
 # we will temporarily use this shit.
 def markup_for(task_text):
-    date_regex = re.compile("^([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))$")
+    date_regex = re.compile("^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))$")
     list_regex = re.compile("^@[a-zA-Z0-9]")
     context_regex = re.compile("^@@[a-zA-Z0-9]")
     prio_regex = re.compile("^[(][A-Z][)]$")

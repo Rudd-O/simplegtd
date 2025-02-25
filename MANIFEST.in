@@ -1,6 +1,9 @@
 include README.md
 include TODO
 include LICENSE.txt
-include applications/*.desktop
-include icons/*.svg
-include data/*
+include src/simplegtd/models/fixtures/*
+include src/simplegtd/data/applications/*.desktop
+include src/simplegtd/data/icons/*.svg
+include src/simplegtd/data/ui/*
+include tox.ini
+include mypy.ini

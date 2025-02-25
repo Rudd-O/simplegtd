@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+dynamic = ["version", "readme"]
+name = "simplegtd"
+dependencies = [
+    "pyxdg",
+]
+authors = [
+    {name = "Manuel Amador (Rudd-O)", email = "rudd-o@rudd-o.com"}
+]
+description = "Manage your todo.txt task list using the Getting Things Done system."
+license = {file = "LICENSE.txt"}
+keywords = ["gtd", "getting things done", "TODO.TXT"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: X11 Applications :: GTK",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Office/Business :: Scheduling",
+    "Topic :: Office/Business :: Groupware",
+]
+
+[project.urls]
+Homepage = "https://github.com/Rudd-O/simplegtd"
+Repository = "https://github.com/Rudd-O/simplegtd"
+Issues = "https://github.com/Rudd-O/simplegtd/issues"
+
+[project.scripts]
+simplegtd = "simplegtd:main"
+
+[tool.setuptools.dynamic]
+version = {attr = "simplegtd.__version__"}
+readme = {file = "README.md"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+simplegtd = ["src/simplegtd/applications/*.desktop", "src/simplegtd/icons/*.svg", "src/simplegtd/data/*.ui"]
